@@ -21,9 +21,10 @@ public class DataUpdate implements LocationListener, SensorEventListener{
 	private Location previousBestLocation;
 	private LocationManager mLocationManager;
 	private SensorManager mSensorManager;
+	private Vibrator mVibrator;
 	private int sensorTypes[] = new int[] { Sensor.TYPE_ACCELEROMETER};
 	private static final float NS2S = 1.0f / 1000000000.0f;
-	private float[] acceleration = new float[] {0,0,0};
+	private float[] previousEventValue = new float[]{0,0,0};
 	private float mDeltaAccelerometer = 0;
 	private String TAG = DataUpdate.class.getSimpleName();
 	
@@ -32,6 +33,8 @@ public class DataUpdate implements LocationListener, SensorEventListener{
     	for(int i = 0; i < 3; i ++){
     		delta += Math.abs(oldReading[i] - newReading[i]); 
     	}
+    	Log.d(TAG,"delta:"+delta);
+    	
     	return delta;
     }
 	
@@ -39,7 +42,7 @@ public class DataUpdate implements LocationListener, SensorEventListener{
 	public DataUpdate(Context context){
 		mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-		Vibrator myVibrator = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+		mVibrator = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
 	}
 	public void startRecording(){
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
@@ -145,20 +148,24 @@ public class DataUpdate implements LocationListener, SensorEventListener{
 		Log.d("SensorEventListener", "onSensorChanged called");
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER ) {
 			Log.d("onSensorChanged",Arrays.toString(event.values));
-			
-			float newDeltaAccelerometer = deltaAccelerometerReading(acceleration, event.values);
-			acceleration = event.values;
+			float newDeltaAccelerometer = deltaAccelerometerReading(previousEventValue, event.values);
+			previousEventValue = event.values.clone();
 			mDeltaAccelerometer = lowpassFilter(newDeltaAccelerometer,mDeltaAccelerometer,0.6f);
 			if( isMoving(mDeltaAccelerometer) ){		
 				Log.d(TAG,"is moving");
+				PhoneStatus.isMoving = PhoneStatus.moveStatus.move;
+				
 			}
 			else{
 				Log.d(TAG,"is not moving");
+				PhoneStatus.isMoving = PhoneStatus.moveStatus.still;
+				
 			}
 		}
 		
 	}
 	private boolean isMoving(float deltaAccelerometer){
+		Log.d(TAG,""+deltaAccelerometer);
 		return (deltaAccelerometer > 1);
 	}
 	@Override

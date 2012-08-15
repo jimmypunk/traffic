@@ -29,7 +29,621 @@ public final class R {
         public static final int trafficlog=0x7f030003;
     }
     public static final class string {
+        public static final int about_copyright_notice=0x7f040002;
+        public static final int about_license=0x7f040003;
+        public static final int about_privacy=0x7f040004;
+        public static final int about_support=0x7f040005;
+        public static final int about_version=0x7f040006;
+        /**  Activity Type 
+         */
+        public static final int activity_type_airplane=0x7f040007;
+        public static final int activity_type_atv=0x7f040008;
+        public static final int activity_type_biking=0x7f040009;
+        public static final int activity_type_blimp=0x7f04000a;
+        public static final int activity_type_boat=0x7f04000b;
+        public static final int activity_type_climbing=0x7f04000c;
+        public static final int activity_type_commercial_airplane=0x7f04000d;
+        public static final int activity_type_cross_country_skiing=0x7f04000e;
+        public static final int activity_type_cycling=0x7f04000f;
+        public static final int activity_type_dirt_bike=0x7f040010;
+        public static final int activity_type_donkey_back_riding=0x7f040011;
+        public static final int activity_type_driving=0x7f040012;
+        public static final int activity_type_driving_bus=0x7f040013;
+        public static final int activity_type_driving_car=0x7f040014;
+        public static final int activity_type_ferry=0x7f040015;
+        public static final int activity_type_frisbee=0x7f040016;
+        public static final int activity_type_gliding=0x7f040017;
+        public static final int activity_type_hang_gliding=0x7f040018;
+        public static final int activity_type_helicopter=0x7f040019;
+        public static final int activity_type_hiking=0x7f04001a;
+        public static final int activity_type_horse_back_riding=0x7f04001b;
+        public static final int activity_type_hot_air_balloon=0x7f04001c;
+        public static final int activity_type_ice_sailing=0x7f04001d;
+        public static final int activity_type_inline_skating=0x7f04001e;
+        public static final int activity_type_kayaking=0x7f04001f;
+        public static final int activity_type_kite_surfing=0x7f040020;
+        public static final int activity_type_land_sailing=0x7f040021;
+        public static final int activity_type_mixed_type=0x7f040022;
+        public static final int activity_type_motor_bike=0x7f040023;
+        public static final int activity_type_motor_boating=0x7f040024;
+        public static final int activity_type_mountain_biking=0x7f040025;
+        public static final int activity_type_off_trail_hiking=0x7f040026;
+        public static final int activity_type_other=0x7f040027;
+        public static final int activity_type_paddling=0x7f040028;
+        public static final int activity_type_para_gliding=0x7f040029;
+        public static final int activity_type_rc_airplane=0x7f04002a;
+        public static final int activity_type_rc_boat=0x7f04002b;
+        public static final int activity_type_rc_helicopter=0x7f04002c;
+        public static final int activity_type_riding=0x7f04002d;
+        public static final int activity_type_road_biking=0x7f04002e;
+        public static final int activity_type_roller_skiing=0x7f04002f;
+        public static final int activity_type_rowing=0x7f040030;
+        public static final int activity_type_running=0x7f040031;
+        public static final int activity_type_sailing=0x7f040032;
+        public static final int activity_type_seaplane=0x7f040033;
+        public static final int activity_type_skate_boarding=0x7f040034;
+        public static final int activity_type_skating=0x7f040035;
+        public static final int activity_type_skiing=0x7f040036;
+        public static final int activity_type_sky_jumping=0x7f040037;
+        public static final int activity_type_sled=0x7f040038;
+        public static final int activity_type_snow_boarding=0x7f040039;
+        public static final int activity_type_snow_shoeing=0x7f04003a;
+        public static final int activity_type_speed_walking=0x7f04003b;
+        public static final int activity_type_street_running=0x7f04003c;
+        public static final int activity_type_surfing=0x7f04003d;
+        public static final int activity_type_track_cycling=0x7f04003e;
+        public static final int activity_type_track_running=0x7f04003f;
+        public static final int activity_type_trail_hiking=0x7f040040;
+        public static final int activity_type_trail_running=0x7f040041;
+        public static final int activity_type_train=0x7f040042;
+        public static final int activity_type_ultimate_frisbee=0x7f040043;
+        public static final int activity_type_unknown=0x7f040044;
+        public static final int activity_type_wakeboarding=0x7f040045;
+        public static final int activity_type_walking=0x7f040046;
+        public static final int activity_type_water_skiing=0x7f040047;
+        public static final int activity_type_wind_surfing=0x7f040048;
         public static final int app_name=0x7f040001;
+        /**  Description 
+         */
+        public static final int description_activity_type=0x7f040049;
+        public static final int description_average_moving_pace=0x7f04004a;
+        public static final int description_average_moving_speed=0x7f04004b;
+        public static final int description_average_pace=0x7f04004c;
+        public static final int description_average_speed=0x7f04004d;
+        public static final int description_elevation_gain=0x7f04004e;
+        public static final int description_elevation_imperial=0x7f04004f;
+        public static final int description_elevation_metric=0x7f040050;
+        public static final int description_fastest_pace=0x7f040051;
+        public static final int description_location_accuracy=0x7f040052;
+        public static final int description_location_altitude=0x7f040053;
+        public static final int description_location_bearing=0x7f040054;
+        public static final int description_location_latitude=0x7f040055;
+        public static final int description_location_longitude=0x7f040056;
+        public static final int description_location_speed=0x7f040057;
+        public static final int description_max_elevation=0x7f040058;
+        public static final int description_max_grade=0x7f040059;
+        public static final int description_max_speed=0x7f04005a;
+        public static final int description_min_elevation=0x7f04005b;
+        public static final int description_min_grade=0x7f04005c;
+        public static final int description_moving_time=0x7f04005d;
+        public static final int description_pace_imperial=0x7f04005e;
+        public static final int description_pace_metric=0x7f04005f;
+        public static final int description_recorded_time=0x7f040060;
+        public static final int description_sensor_battery_level=0x7f040061;
+        public static final int description_sensor_cadence=0x7f040062;
+        public static final int description_sensor_heart_rate=0x7f040063;
+        public static final int description_sensor_power=0x7f040064;
+        public static final int description_speed_imperial=0x7f040065;
+        public static final int description_speed_metric=0x7f040066;
+        public static final int description_time=0x7f040067;
+        public static final int description_total_distance=0x7f040068;
+        public static final int description_total_time=0x7f040069;
+        public static final int description_track_point=0x7f04006a;
+        public static final int description_track_segment=0x7f04006b;
+        /**  EULA 
+         */
+        public static final int eula_accept=0x7f04006c;
+        public static final int eula_body=0x7f04006d;
+        public static final int eula_copyright_year=0x7f04006e;
+        public static final int eula_date=0x7f04006f;
+        public static final int eula_decline=0x7f040070;
+        public static final int eula_footer=0x7f040071;
+        public static final int eula_title=0x7f040072;
+        /**  Generic Strings 
+         */
+        public static final int generic_add=0x7f040073;
+        public static final int generic_cancel=0x7f040074;
+        public static final int generic_confirm_title=0x7f040075;
+        public static final int generic_description=0x7f040076;
+        public static final int generic_description_line=0x7f040077;
+        public static final int generic_do_not_show_again=0x7f040078;
+        public static final int generic_error_title=0x7f040079;
+        public static final int generic_name=0x7f04007a;
+        public static final int generic_name_line=0x7f04007b;
+        public static final int generic_ok=0x7f04007c;
+        public static final int generic_progress_title=0x7f04007d;
+        public static final int generic_save=0x7f04007e;
+        public static final int generic_success_title=0x7f04007f;
+        /**  GPS 
+         */
+        public static final int gps_need_to_enable=0x7f040080;
+        public static final int gps_not_found=0x7f040081;
+        public static final int gps_wait_for_signal=0x7f040082;
+        /**  About Page 
+         */
         public static final int hello=0x7f040000;
+        /**  Help page 
+         */
+        public static final int help_about=0x7f040083;
+        public static final int help_battery_life_answer=0x7f040084;
+        public static final int help_battery_life_question=0x7f040085;
+        public static final int help_data_connection_answer=0x7f040086;
+        public static final int help_data_connection_question=0x7f040087;
+        public static final int help_delete_tracks_answer=0x7f040088;
+        public static final int help_delete_tracks_question=0x7f040089;
+        public static final int help_edit_tracks_answer=0x7f04008a;
+        public static final int help_edit_tracks_question=0x7f04008b;
+        public static final int help_elevation_precision_answer=0x7f04008c;
+        public static final int help_elevation_precision_question=0x7f04008d;
+        public static final int help_gps_signal_answer=0x7f04008e;
+        public static final int help_gps_signal_question=0x7f04008f;
+        public static final int help_location_precision_answer=0x7f040090;
+        public static final int help_location_precision_question=0x7f040091;
+        public static final int help_maps_public_unlisted_answer=0x7f040092;
+        public static final int help_maps_public_unlisted_question=0x7f040093;
+        public static final int help_marker_answer=0x7f040094;
+        public static final int help_marker_question=0x7f040095;
+        public static final int help_my_tracks_answer=0x7f040096;
+        public static final int help_my_tracks_question=0x7f040097;
+        public static final int help_saved_files_answer=0x7f040098;
+        public static final int help_saved_files_question=0x7f040099;
+        public static final int help_send_track_answer=0x7f04009a;
+        public static final int help_send_track_question=0x7f04009b;
+        public static final int help_share_friends_answer=0x7f04009c;
+        public static final int help_share_friends_question=0x7f04009d;
+        public static final int help_share_visibility_answer=0x7f04009e;
+        public static final int help_share_visibility_question=0x7f04009f;
+        public static final int help_split_marker_answer=0x7f0400a0;
+        public static final int help_split_marker_question=0x7f0400a1;
+        public static final int help_split_track_answer=0x7f0400a2;
+        public static final int help_split_track_question=0x7f0400a3;
+        /**  Icon 
+         */
+        public static final int icon_application=0x7f0400a4;
+        public static final int icon_marker=0x7f0400a5;
+        public static final int icon_my_location=0x7f0400a6;
+        public static final int icon_recording=0x7f0400a7;
+        public static final int icon_track=0x7f0400a8;
+        /**  Import GPX Files 
+         */
+        public static final int import_gpx_files_few=0x7f0400a9;
+        public static final int import_gpx_files_many=0x7f0400aa;
+        public static final int import_gpx_files_one=0x7f0400ab;
+        public static final int import_gpx_files_other=0x7f0400ac;
+        public static final int import_gpx_files_two=0x7f0400ad;
+        public static final int import_gpx_files_zero=0x7f0400ae;
+        /**  Maps List 
+         */
+        public static final int maps_list_error=0x7f0400af;
+        public static final int maps_list_no_maps=0x7f0400b0;
+        public static final int maps_list_progress_message=0x7f0400b1;
+        public static final int maps_list_public_label=0x7f0400b2;
+        public static final int maps_list_title=0x7f0400b3;
+        public static final int maps_list_unlisted_label=0x7f0400b4;
+        /**  Marker 
+         */
+        public static final int marker_add_error=0x7f0400b5;
+        public static final int marker_add_success=0x7f0400b6;
+        public static final int marker_delete_one_marker_confirm_message=0x7f0400b7;
+        public static final int marker_detail_statistics_title=0x7f0400b8;
+        public static final int marker_detail_waypoint_marker_type=0x7f0400b9;
+        public static final int marker_edit_marker_type=0x7f0400ba;
+        public static final int marker_edit_marker_type_hint=0x7f0400bb;
+        public static final int marker_label_end=0x7f0400bc;
+        public static final int marker_label_start=0x7f0400bd;
+        public static final int marker_list_empty_message=0x7f0400be;
+        public static final int marker_name_format=0x7f0400bf;
+        public static final int marker_split_name_format=0x7f0400c0;
+        /**  Menu Items 
+         */
+        public static final int menu_aggregated_statistics=0x7f0400c1;
+        public static final int menu_delete=0x7f0400c2;
+        public static final int menu_delete_all=0x7f0400c3;
+        public static final int menu_edit=0x7f0400c4;
+        public static final int menu_help=0x7f0400c5;
+        public static final int menu_import=0x7f0400c6;
+        public static final int menu_insert_marker=0x7f0400c7;
+        public static final int menu_map_mode=0x7f0400c8;
+        public static final int menu_markers=0x7f0400c9;
+        public static final int menu_play=0x7f0400ca;
+        public static final int menu_record_track=0x7f0400cb;
+        public static final int menu_satellite_mode=0x7f0400cc;
+        public static final int menu_save=0x7f0400cd;
+        public static final int menu_save_all=0x7f0400ce;
+        public static final int menu_save_format=0x7f0400cf;
+        public static final int menu_search=0x7f0400d0;
+        public static final int menu_send_google=0x7f0400d1;
+        public static final int menu_sensor_state=0x7f0400d2;
+        public static final int menu_settings=0x7f0400d3;
+        public static final int menu_share=0x7f0400d4;
+        public static final int menu_show_on_map=0x7f0400d5;
+        public static final int menu_split_frequency=0x7f0400d6;
+        public static final int menu_stop_recording=0x7f0400d7;
+        public static final int menu_voice_frequency=0x7f0400d8;
+        /**  My Location 
+         */
+        public static final int my_location_approximate_location=0x7f0400d9;
+        public static final int my_location_no_location=0x7f0400da;
+        /**  My Tracks 
+         */
+        public static final int my_tracks_app_name=0x7f0400db;
+        public static final int my_tracks_recording_service=0x7f0400dc;
+        /**  Permission 
+         */
+        public static final int permission_notification_description=0x7f0400dd;
+        public static final int permission_notification_label=0x7f0400de;
+        public static final int permission_read_description=0x7f0400df;
+        public static final int permission_read_label=0x7f0400e0;
+        public static final int permission_write_description=0x7f0400e1;
+        public static final int permission_write_label=0x7f0400e2;
+        /**  SD Card 
+         */
+        public static final int sd_card_canceled=0x7f0400e3;
+        public static final int sd_card_error_no_storage=0x7f0400e4;
+        public static final int sd_card_import_error=0x7f0400e5;
+        public static final int sd_card_import_error_no_file=0x7f0400e6;
+        public static final int sd_card_import_progress_message=0x7f0400e7;
+        public static final int sd_card_import_success=0x7f0400e8;
+        public static final int sd_card_import_success_count=0x7f0400e9;
+        public static final int sd_card_save_error=0x7f0400ea;
+        public static final int sd_card_save_error_create_dir=0x7f0400eb;
+        public static final int sd_card_save_error_no_track=0x7f0400ec;
+        public static final int sd_card_save_progress_message=0x7f0400ed;
+        public static final int sd_card_save_success=0x7f0400ee;
+        /**  Search 
+         */
+        public static final int search_global_description=0x7f0400ef;
+        public static final int search_list_empty_message=0x7f0400f0;
+        public static final int search_list_marker_track_location=0x7f0400f1;
+        public static final int search_voice_prompt=0x7f0400f2;
+        /**  Send Google 
+         */
+        public static final int send_google_by_my_tracks=0x7f0400f3;
+        public static final int send_google_choose_account_title=0x7f0400f4;
+        public static final int send_google_docs=0x7f0400f5;
+        public static final int send_google_error=0x7f0400f6;
+        public static final int send_google_existing_map=0x7f0400f7;
+        public static final int send_google_fusion_tables=0x7f0400f8;
+        public static final int send_google_fusion_tables_new_public_table=0x7f0400f9;
+        public static final int send_google_maps=0x7f0400fa;
+        public static final int send_google_new_public_map=0x7f0400fb;
+        public static final int send_google_new_unlisted_map=0x7f0400fc;
+        public static final int send_google_no_account_message=0x7f0400fd;
+        public static final int send_google_no_account_permission=0x7f0400ff;
+        public static final int send_google_no_account_title=0x7f0400fe;
+        public static final int send_google_no_service_selected=0x7f040100;
+        public static final int send_google_progress_message=0x7f040101;
+        public static final int send_google_send_now=0x7f040102;
+        public static final int send_google_success_footer=0x7f040103;
+        public static final int send_google_title=0x7f040104;
+        public static final int send_google_track_part_label=0x7f040105;
+        /**  Sensor State 
+         */
+        public static final int sensor_state_battery=0x7f040106;
+        public static final int sensor_state_cadence=0x7f040107;
+        public static final int sensor_state_cadence_value=0x7f040108;
+        public static final int sensor_state_connected=0x7f040109;
+        public static final int sensor_state_connecting=0x7f04010a;
+        public static final int sensor_state_disconnected=0x7f04010b;
+        public static final int sensor_state_heart_rate=0x7f04010c;
+        public static final int sensor_state_heart_rate_value=0x7f04010d;
+        public static final int sensor_state_last_sensor_time=0x7f04010e;
+        public static final int sensor_state_power=0x7f04010f;
+        public static final int sensor_state_power_value=0x7f040110;
+        public static final int sensor_state_sending=0x7f040111;
+        /**  Settings Backup 
+         */
+        public static final int settings_backup=0x7f040112;
+        public static final int settings_backup_now=0x7f040113;
+        public static final int settings_backup_now_progress_message=0x7f040114;
+        public static final int settings_backup_now_summary=0x7f040115;
+        public static final int settings_backup_restore=0x7f040116;
+        public static final int settings_backup_restore_confirm_message=0x7f040117;
+        public static final int settings_backup_restore_no_backup=0x7f040118;
+        public static final int settings_backup_restore_progress_message=0x7f040119;
+        public static final int settings_backup_restore_select_title=0x7f04011a;
+        public static final int settings_backup_restore_summary=0x7f04011b;
+        /**  Settings Chart 
+         */
+        public static final int settings_chart_by_distance=0x7f04011c;
+        public static final int settings_chart_by_time=0x7f04011d;
+        public static final int settings_chart_x_axis=0x7f04011e;
+        /**  Settings Map 
+         */
+        public static final int settings_map_medium=0x7f04011f;
+        public static final int settings_map_percentage=0x7f040120;
+        public static final int settings_map_percentage_summary=0x7f040121;
+        public static final int settings_map_slow=0x7f040122;
+        public static final int settings_map_track_color_mode=0x7f040123;
+        public static final int settings_map_track_color_mode_dynamic=0x7f040124;
+        public static final int settings_map_track_color_mode_fixed=0x7f040125;
+        public static final int settings_map_track_color_mode_single=0x7f040126;
+        public static final int settings_map_track_color_mode_summary=0x7f040127;
+        /**  Settings Not While Recording 
+         */
+        public static final int settings_not_while_recording=0x7f040128;
+        /**  Settings Recording 
+         */
+        public static final int settings_recording=0x7f040129;
+        public static final int settings_recording_auto_resume=0x7f04012a;
+        public static final int settings_recording_auto_resume_summary=0x7f04012b;
+        public static final int settings_recording_default_activity=0x7f04012c;
+        public static final int settings_recording_default_activity_summary=0x7f04012d;
+        public static final int settings_recording_distance=0x7f04012e;
+        public static final int settings_recording_distance_summary=0x7f04012f;
+        public static final int settings_recording_gps_accuracy=0x7f040130;
+        public static final int settings_recording_gps_accuracy_summary=0x7f040131;
+        public static final int settings_recording_interval=0x7f040132;
+        public static final int settings_recording_interval_summary=0x7f040133;
+        public static final int settings_recording_track_distance=0x7f040134;
+        public static final int settings_recording_track_distance_summary=0x7f040135;
+        public static final int settings_recording_track_name=0x7f040136;
+        public static final int settings_recording_track_name_date_iso_8601_option=0x7f040137;
+        public static final int settings_recording_track_name_date_local_option=0x7f040138;
+        public static final int settings_recording_track_name_location_option=0x7f040139;
+        public static final int settings_recording_track_name_number_option=0x7f04013a;
+        public static final int settings_recording_track_name_summary=0x7f04013b;
+        /**  Settings Reset 
+         */
+        public static final int settings_reset=0x7f04013c;
+        public static final int settings_reset_confirm_message=0x7f04013d;
+        public static final int settings_reset_done=0x7f04013e;
+        public static final int settings_reset_summary=0x7f04013f;
+        /**  Settings Sensor 
+         */
+        public static final int settings_sensor=0x7f040140;
+        public static final int settings_sensor_ant_options=0x7f040141;
+        public static final int settings_sensor_ant_paired=0x7f040142;
+        public static final int settings_sensor_ant_reset_bike_candence_sensor=0x7f040143;
+        public static final int settings_sensor_ant_reset_combined_bike_sensor=0x7f040144;
+        public static final int settings_sensor_ant_reset_heart_rate_monitor=0x7f040145;
+        public static final int settings_sensor_ant_reset_speed_distance_monitor=0x7f040146;
+        public static final int settings_sensor_bluetooth_options=0x7f040147;
+        public static final int settings_sensor_bluetooth_pairing=0x7f040148;
+        public static final int settings_sensor_bluetooth_pairing_summary=0x7f040149;
+        public static final int settings_sensor_bluetooth_sensor=0x7f04014a;
+        public static final int settings_sensor_bluetooth_sensor_summary=0x7f04014b;
+        public static final int settings_sensor_connected=0x7f04014c;
+        public static final int settings_sensor_not_connected=0x7f04014d;
+        public static final int settings_sensor_type=0x7f04014e;
+        public static final int settings_sensor_type_ant=0x7f04014f;
+        public static final int settings_sensor_type_none=0x7f040150;
+        public static final int settings_sensor_type_polar=0x7f040151;
+        public static final int settings_sensor_type_summary=0x7f040152;
+        public static final int settings_sensor_type_zephyr=0x7f040153;
+        /**  Settings Sharing 
+         */
+        public static final int settings_sharing=0x7f040154;
+        public static final int settings_sharing_allow_access=0x7f040155;
+        public static final int settings_sharing_allow_access_confirm_message=0x7f040156;
+        public static final int settings_sharing_allow_access_summary_off=0x7f040157;
+        public static final int settings_sharing_allow_access_summary_on=0x7f040158;
+        public static final int settings_sharing_new_map_public=0x7f040159;
+        public static final int settings_sharing_new_map_public_summary_off=0x7f04015a;
+        public static final int settings_sharing_new_map_public_summary_on=0x7f04015b;
+        /**  Settings Show 
+         */
+        public static final int settings_show=0x7f04015c;
+        /**  Settings Split 
+         */
+        public static final int settings_split_frequency_title=0x7f04015d;
+        /**  Settings Stats 
+         */
+        public static final int settings_stats_coordinate=0x7f04015e;
+        public static final int settings_stats_grade=0x7f04015f;
+        public static final int settings_stats_rate_title=0x7f040160;
+        public static final int settings_stats_time_title=0x7f040161;
+        public static final int settings_stats_units_imperial=0x7f040162;
+        public static final int settings_stats_units_metric=0x7f040163;
+        public static final int settings_stats_units_title=0x7f040164;
+        /**   Settings Switch Account 
+         */
+        public static final int settings_switch_account=0x7f040165;
+        /**  Settings Voice 
+         */
+        public static final int settings_voice_frequency_title=0x7f040166;
+        /**  Share Track 
+         */
+        public static final int share_track_confirm_message=0x7f040167;
+        public static final int share_track_picker_title=0x7f040168;
+        public static final int share_track_share_file=0x7f040169;
+        public static final int share_track_share_file_body=0x7f04016a;
+        public static final int share_track_share_url=0x7f04016b;
+        public static final int share_track_share_url_body=0x7f04016c;
+        public static final int share_track_subject=0x7f04016d;
+        /**  Stats Page 
+         */
+        public static final int stats_average_moving_pace=0x7f04016e;
+        public static final int stats_average_moving_speed=0x7f04016f;
+        public static final int stats_average_pace=0x7f040170;
+        public static final int stats_average_speed=0x7f040171;
+        public static final int stats_elevation=0x7f040172;
+        public static final int stats_elevation_gain=0x7f040173;
+        public static final int stats_fastest_pace=0x7f040174;
+        public static final int stats_latitude=0x7f040175;
+        public static final int stats_longitude=0x7f040176;
+        public static final int stats_max_elevation=0x7f040177;
+        public static final int stats_max_grade=0x7f040178;
+        public static final int stats_max_speed=0x7f040179;
+        public static final int stats_min_elevation=0x7f04017a;
+        public static final int stats_min_grade=0x7f04017b;
+        public static final int stats_moving_time=0x7f04017c;
+        public static final int stats_pace=0x7f04017d;
+        public static final int stats_speed=0x7f04017e;
+        public static final int stats_total_distance=0x7f04017f;
+        public static final int stats_total_time=0x7f040180;
+        /**  Track 
+         */
+        public static final int track_detail_chart_tab=0x7f040181;
+        public static final int track_detail_delete_confirm_message=0x7f040182;
+        public static final int track_detail_install_earth_error=0x7f040184;
+        public static final int track_detail_install_earth_message=0x7f040183;
+        public static final int track_detail_map_tab=0x7f040185;
+        public static final int track_detail_stats_tab=0x7f040186;
+        public static final int track_detail_title_recording=0x7f040187;
+        public static final int track_edit_activity_type=0x7f040188;
+        public static final int track_edit_activity_type_hint=0x7f040189;
+        public static final int track_edit_new_track_title=0x7f04018a;
+        public static final int track_list_delete_all_confirm_message=0x7f04018b;
+        public static final int track_list_empty_message=0x7f04018c;
+        public static final int track_list_record_error=0x7f04018d;
+        public static final int track_list_record_success=0x7f04018e;
+        public static final int track_name_format=0x7f04018f;
+        public static final int track_record_notification=0x7f040190;
+        /**  Unit 
+         */
+        public static final int unit_feet=0x7f040191;
+        public static final int unit_kilometer=0x7f040192;
+        public static final int unit_kilometer_per_hour=0x7f040193;
+        public static final int unit_meter=0x7f040194;
+        public static final int unit_mile=0x7f040195;
+        public static final int unit_mile_per_hour=0x7f040196;
+        /**  Value 
+         */
+        public static final int value_adapt_accuracy=0x7f040197;
+        public static final int value_adapt_battery_life=0x7f040198;
+        public static final int value_always=0x7f040199;
+        public static final int value_coordinate_degree=0x7f04019a;
+        public static final int value_float_feet=0x7f04019b;
+        public static final int value_float_kilometer=0x7f04019c;
+        public static final int value_float_kilometer_hour=0x7f04019d;
+        public static final int value_float_meter=0x7f04019e;
+        public static final int value_float_mile=0x7f04019f;
+        public static final int value_float_mile_hour=0x7f0401a0;
+        public static final int value_float_mile_poor_gps=0x7f0401a1;
+        public static final int value_float_minute_kilometer=0x7f0401a2;
+        public static final int value_float_minute_mile=0x7f0401a3;
+        public static final int value_integer_feet=0x7f0401a4;
+        public static final int value_integer_feet_excellent_gps=0x7f0401a5;
+        public static final int value_integer_feet_recommended=0x7f0401a6;
+        public static final int value_integer_kilometer=0x7f0401a7;
+        public static final int value_integer_kilometer_hour=0x7f0401a8;
+        public static final int value_integer_meter=0x7f0401a9;
+        public static final int value_integer_meter_excellent_gps=0x7f0401aa;
+        public static final int value_integer_meter_poor_gps=0x7f0401ab;
+        public static final int value_integer_meter_recommended=0x7f0401ac;
+        public static final int value_integer_mile=0x7f0401ad;
+        public static final int value_integer_mile_hour=0x7f0401ae;
+        public static final int value_integer_minute=0x7f0401af;
+        public static final int value_integer_percent=0x7f0401b0;
+        public static final int value_integer_second=0x7f0401b1;
+        public static final int value_never=0x7f0401b2;
+        public static final int value_off=0x7f0401b3;
+        public static final int value_smallest_recommended=0x7f0401b4;
+        /**  Voice 
+         */
+        public static final int voice_hours_few=0x7f0401b5;
+        public static final int voice_hours_many=0x7f0401b6;
+        public static final int voice_hours_one=0x7f0401b7;
+        public static final int voice_hours_other=0x7f0401b8;
+        public static final int voice_hours_two=0x7f0401b9;
+        public static final int voice_hours_zero=0x7f0401ba;
+        public static final int voice_minutes_few=0x7f0401bb;
+        public static final int voice_minutes_many=0x7f0401bc;
+        public static final int voice_minutes_one=0x7f0401bd;
+        public static final int voice_minutes_other=0x7f0401be;
+        public static final int voice_minutes_two=0x7f0401bf;
+        public static final int voice_minutes_zero=0x7f0401c0;
+        public static final int voice_pace_per_kilometer=0x7f0401c1;
+        public static final int voice_pace_per_mile=0x7f0401c2;
+        public static final int voice_seconds_few=0x7f0401c3;
+        public static final int voice_seconds_many=0x7f0401c4;
+        public static final int voice_seconds_one=0x7f0401c5;
+        public static final int voice_seconds_other=0x7f0401c6;
+        public static final int voice_seconds_two=0x7f0401c7;
+        public static final int voice_seconds_zero=0x7f0401c8;
+        public static final int voice_speed_kilometers_per_hour_few=0x7f0401c9;
+        public static final int voice_speed_kilometers_per_hour_many=0x7f0401ca;
+        public static final int voice_speed_kilometers_per_hour_one=0x7f0401cb;
+        public static final int voice_speed_kilometers_per_hour_other=0x7f0401cc;
+        public static final int voice_speed_kilometers_per_hour_two=0x7f0401cd;
+        public static final int voice_speed_kilometers_per_hour_zero=0x7f0401ce;
+        public static final int voice_speed_miles_per_hour_few=0x7f0401cf;
+        public static final int voice_speed_miles_per_hour_many=0x7f0401d0;
+        public static final int voice_speed_miles_per_hour_one=0x7f0401d1;
+        public static final int voice_speed_miles_per_hour_other=0x7f0401d2;
+        public static final int voice_speed_miles_per_hour_two=0x7f0401d3;
+        public static final int voice_speed_miles_per_hour_zero=0x7f0401d4;
+        public static final int voice_template=0x7f0401d5;
+        public static final int voice_total_distance_kilometers_few=0x7f0401d6;
+        public static final int voice_total_distance_kilometers_many=0x7f0401d7;
+        public static final int voice_total_distance_kilometers_one=0x7f0401d8;
+        public static final int voice_total_distance_kilometers_other=0x7f0401d9;
+        public static final int voice_total_distance_kilometers_two=0x7f0401da;
+        public static final int voice_total_distance_kilometers_zero=0x7f0401db;
+        public static final int voice_total_distance_miles_few=0x7f0401dc;
+        public static final int voice_total_distance_miles_many=0x7f0401dd;
+        public static final int voice_total_distance_miles_one=0x7f0401de;
+        public static final int voice_total_distance_miles_other=0x7f0401df;
+        public static final int voice_total_distance_miles_two=0x7f0401e0;
+        public static final int voice_total_distance_miles_zero=0x7f0401e1;
+        public static final int voice_total_distance_zero=0x7f0401e2;
+        /**  Waypoint Type 
+         */
+        public static final int waypoint_type_atm=0x7f0401e3;
+        public static final int waypoint_type_bank=0x7f0401e4;
+        public static final int waypoint_type_bar=0x7f0401e5;
+        public static final int waypoint_type_barbecue=0x7f0401e6;
+        public static final int waypoint_type_building=0x7f0401e7;
+        public static final int waypoint_type_bus_stop=0x7f0401e8;
+        public static final int waypoint_type_cafe=0x7f0401e9;
+        public static final int waypoint_type_campfire=0x7f0401ea;
+        public static final int waypoint_type_campground=0x7f0401eb;
+        public static final int waypoint_type_church=0x7f0401ec;
+        public static final int waypoint_type_coffee_house=0x7f0401ed;
+        public static final int waypoint_type_convenience_store=0x7f0401ee;
+        public static final int waypoint_type_drinking_water=0x7f0401ef;
+        public static final int waypoint_type_falling_rocks=0x7f0401f0;
+        public static final int waypoint_type_ferry=0x7f0401f1;
+        public static final int waypoint_type_fire_place=0x7f0401f2;
+        public static final int waypoint_type_fire_station=0x7f0401f3;
+        public static final int waypoint_type_fishing=0x7f0401f4;
+        public static final int waypoint_type_gas_station=0x7f0401f5;
+        public static final int waypoint_type_golf_course=0x7f0401f6;
+        public static final int waypoint_type_grocery_store=0x7f0401f7;
+        public static final int waypoint_type_hair_dresser=0x7f0401f8;
+        public static final int waypoint_type_harbor=0x7f0401f9;
+        public static final int waypoint_type_hiking_path=0x7f0401fa;
+        public static final int waypoint_type_hotel=0x7f0401fb;
+        public static final int waypoint_type_house=0x7f0401fc;
+        public static final int waypoint_type_information=0x7f0401fd;
+        public static final int waypoint_type_intersection=0x7f0401fe;
+        public static final int waypoint_type_mail_box=0x7f0401ff;
+        public static final int waypoint_type_market=0x7f040200;
+        public static final int waypoint_type_meeting_point=0x7f040201;
+        public static final int waypoint_type_opera=0x7f040202;
+        public static final int waypoint_type_parking=0x7f040203;
+        public static final int waypoint_type_police_station=0x7f040204;
+        public static final int waypoint_type_post_office=0x7f040205;
+        public static final int waypoint_type_pothole=0x7f040206;
+        public static final int waypoint_type_railway_crossing=0x7f040207;
+        public static final int waypoint_type_restaurant=0x7f040208;
+        public static final int waypoint_type_shopping=0x7f040209;
+        public static final int waypoint_type_sight=0x7f04020a;
+        public static final int waypoint_type_store=0x7f04020b;
+        public static final int waypoint_type_swimming_pool=0x7f04020c;
+        public static final int waypoint_type_telephone=0x7f04020d;
+        public static final int waypoint_type_theater=0x7f04020e;
+        public static final int waypoint_type_toilet=0x7f04020f;
+        public static final int waypoint_type_tourist_information=0x7f040210;
+        public static final int waypoint_type_tree=0x7f040211;
+        public static final int waypoint_type_tunnel=0x7f040212;
+        public static final int waypoint_type_water_fountain=0x7f040214;
+        public static final int waypoint_type_waterfall=0x7f040213;
+        public static final int waypoint_type_waypoint=0x7f040215;
+        /**  Welcome 
+         */
+        public static final int welcome_message=0x7f040216;
+        public static final int welcome_title=0x7f040217;
     }
 }
