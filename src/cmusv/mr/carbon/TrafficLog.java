@@ -4,16 +4,13 @@ import java.io.File;
 import cmusv.mr.carbon.service.sensors.SensorLogService;
 import cmusv.mr.carbon.utils.ShareTools;
 
-import CMU.SV.R;
-import CMU.SV.R.id;
-import CMU.SV.R.layout;
+import cmusv.mr.carbon.R;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
+
 
 public class TrafficLog extends Activity {
 	private Button startButton;
@@ -82,7 +79,7 @@ public class TrafficLog extends Activity {
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager
 				.getRunningServices(Integer.MAX_VALUE)) {
-			if ("CMU.SV.SensorLogService".equals(service.service
+			if ("cmusv.mr.carbon.service.sensors.SensorLogService".equals(service.service
 					.getClassName())) {
 				return true;
 			}

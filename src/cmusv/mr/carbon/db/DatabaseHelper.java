@@ -20,7 +20,7 @@ import cmusv.mr.carbon.data.stats.TripStatistics;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	static final String DATABASE_NAME = "mrcarbon.db";
-	private static final int DATABASE_VERSION = 20;
+	private static final int DATABASE_VERSION = 21;
 	private SQLiteDatabase db;
 	public static final String TAG = DatabaseHelper.class.getSimpleName();
 
@@ -143,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		int maxGradeIndex = cursor
 				.getColumnIndexOrThrow(TracksColumns.MAXGRADE);
 		int mapIdIndex = cursor.getColumnIndexOrThrow(TracksColumns.MAPID);
-		int tableIdIndex = cursor.getColumnIndexOrThrow(TracksColumns.TABLEID);
+		//int tableIdIndex = cursor.getColumnIndexOrThrow(TracksColumns.TABLEID);
 		int iconIndex = cursor.getColumnIndexOrThrow(TracksColumns.ICON);
 
 		Track track = new Track();
@@ -215,9 +215,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (!cursor.isNull(mapIdIndex)) {
 			track.setMapId(cursor.getString(mapIdIndex));
 		}
-		if (!cursor.isNull(tableIdIndex)) {
+		/*if (!cursor.isNull(tableIdIndex)) {
 			track.setTableId(cursor.getString(tableIdIndex));
-		}
+		}*/
 		if (!cursor.isNull(iconIndex)) {
 			track.setIcon(cursor.getString(iconIndex));
 		}
@@ -393,7 +393,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(TracksColumns.MINGRADE, tripStatistics.getMinGrade());
 		values.put(TracksColumns.MAXGRADE, tripStatistics.getMaxGrade());
 		values.put(TracksColumns.MAPID, track.getMapId());
-		values.put(TracksColumns.TABLEID, track.getTableId());
+		//values.put(TracksColumns.TABLEID, track.getTableId());
 		values.put(TracksColumns.ICON, track.getIcon());
 		return values;
 	}

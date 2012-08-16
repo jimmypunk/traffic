@@ -14,7 +14,7 @@
  * the License.
  */
 package cmusv.mr.carbon.utils;
-import CMU.SV.R;
+import cmusv.mr.carbon.R;
 import android.content.Context;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
