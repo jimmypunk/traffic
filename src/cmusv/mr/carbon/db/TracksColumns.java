@@ -29,17 +29,6 @@ public interface TracksColumns extends BaseColumns {
   public static final String TABLE_NAME = "tracks";
 
   /**
-   * Tracks provider uri.
-   */
-  public static final Uri CONTENT_URI = Uri.parse(
-      "content://com.google.android.maps.mytracks/tracks");
-
-  /**
-   * Track content type.
-   */
-  public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.google.track";
-
-  /**
    * Track id content type.
    */
   public static final String CONTENT_ITEMTYPE = "vnd.android.cursor.item/vnd.google.track";

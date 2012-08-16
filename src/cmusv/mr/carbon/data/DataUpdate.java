@@ -94,7 +94,7 @@ public class DataUpdate implements LocationListener, SensorEventListener{
 		  }
 	public void writeTrack2File(Track track){
 		CsvTrackWriter writer = new CsvTrackWriter(mContext);
-		File file = new File(mContext.getCacheDir(), System.currentTimeMillis()+".csv");
+		File file = new File(mContext.getExternalCacheDir(), System.currentTimeMillis()+".csv");
 		Log.d(TAG,file.getAbsolutePath());
 		OutputStream out;
 		try {

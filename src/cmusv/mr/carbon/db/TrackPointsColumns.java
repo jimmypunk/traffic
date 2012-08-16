@@ -32,10 +32,6 @@ import android.provider.BaseColumns;
 public interface TrackPointsColumns extends BaseColumns {
 
   public static final String TABLE_NAME = "trackpoints";
-  public static final Uri CONTENT_URI = Uri.parse(
-      "content://com.google.android.maps.mytracks/trackpoints");
-  public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.google.trackpoint";
-  public static final String CONTENT_ITEMTYPE = "vnd.android.cursor.item/vnd.google.trackpoint";
   public static final String DEFAULT_SORT_ORDER = "_id";
 
   // Columns

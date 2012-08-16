@@ -3,6 +3,8 @@ package cmusv.mr.carbon.db;
 
 
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,6 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	static final String DATABASE_NAME = "mrcarbon.db";
 	private static final int DATABASE_VERSION = 20;
 	private SQLiteDatabase db;
+	public static final String TAG = DatabaseHelper.class.getSimpleName();
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -78,7 +81,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return null;
 	}
-
+	private ArrayList<Location> getLocationsByTrack(long trackId, long startTrackPointId){
+		ArrayList<Location> locations = new ArrayList<Location>(); 
+		//getLocationsCursor()
+		Cursor cursor = getLocationsCursor(trackId, startTrackPointId,	-1, false);
+		cursor.moveToFirst();
+		if(cursor!=null){
+			do{
+				Location location = createLocation(cursor);
+				locations.add(location);
+				Log.d(TAG,"location:"+location);
+			}while(cursor.moveToNext());
+			
+			return locations;
+		}
+		//db.query(TracksPointsColumns.TABLE_NAME,);
+		return null;
+	}
 	private Cursor getTracksCursor(String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
 
@@ -202,6 +221,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (!cursor.isNull(iconIndex)) {
 			track.setIcon(cursor.getString(iconIndex));
 		}
+		
+		track.setLocations(getLocationsByTrack(track.getId(), track.getStartId()));
 		return track;
 	}
 
