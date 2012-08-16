@@ -63,7 +63,6 @@ public interface TracksColumns extends BaseColumns {
   public static final String MINGRADE = "mingrade"; // minimum grade
   public static final String MAXGRADE = "maxgrade"; // maximum grade
   public static final String MAPID = "mapid"; // Google Maps id
-  public static final String TABLEID = "tableid"; // Google Fusion Tables id
   public static final String ICON = "icon"; // track activity type icon
   
   public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" 
@@ -92,7 +91,6 @@ public interface TracksColumns extends BaseColumns {
       + MINGRADE + " FLOAT, " 
       + MAXGRADE + " FLOAT, " 
       + MAPID + " STRING, " 
-      + TABLEID + " STRING, " 
       + ICON + " STRING" 
       + ");";
 
@@ -122,7 +120,6 @@ public interface TracksColumns extends BaseColumns {
       MINGRADE,
       MAXGRADE,
       MAPID,
-      TABLEID,
       ICON
   };
 
