@@ -16,11 +16,14 @@ package cmusv.mr.carbon.data;
  * the License.
  */
 
+
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+
+import cmusv.mr.carbon.data.stats.TripStatistics;
 
 /**
  * A track.
@@ -44,6 +47,7 @@ public class Track implements Parcelable {
   private String tableId = "";
   private String icon = "";
 
+  private TripStatistics tripStatistics = new TripStatistics();
 
   // Location points (which may not have been loaded)
   private ArrayList<Location> locations = new ArrayList<Location>();
@@ -63,6 +67,7 @@ public class Track implements Parcelable {
     icon = in.readString();
 
     ClassLoader classLoader = getClass().getClassLoader();
+    tripStatistics = in.readParcelable(classLoader);
 
     for (int i = 0; i < numberOfPoints; ++i) {
       Location loc = in.readParcelable(classLoader);
@@ -87,7 +92,7 @@ public class Track implements Parcelable {
     dest.writeString(mapId);
     dest.writeString(tableId);
     dest.writeString(icon);
-
+    dest.writeParcelable(tripStatistics, 0);
     for (int i = 0; i < numberOfPoints; ++i) {
       dest.writeParcelable(locations.get(i), 0);
     }
@@ -183,6 +188,14 @@ public class Track implements Parcelable {
 
   public void setIcon(String icon) {
     this.icon = icon;
+  }
+
+  public TripStatistics getTripStatistics() {
+    return tripStatistics;
+  }
+
+  public void setTripStatistics(TripStatistics tripStatistics) {
+    this.tripStatistics = tripStatistics;
   }
 
   public void addLocation(Location l) {

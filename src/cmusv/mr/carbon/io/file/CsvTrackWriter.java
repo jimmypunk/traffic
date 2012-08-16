@@ -14,17 +14,7 @@
  * the License.
  */
 package cmusv.mr.carbon.io.file;
-/*
-import com.google.android.apps.mytracks.content.MyTracksLocation;
-import com.google.android.apps.mytracks.content.Sensor;
-import com.google.android.apps.mytracks.content.Sensor.SensorData;
-import com.google.android.apps.mytracks.content.Sensor.SensorDataSet;
-import com.google.android.apps.mytracks.content.Track;
-import com.google.android.apps.mytracks.content.Waypoint;
-import com.google.android.apps.mytracks.io.file.TrackWriterFactory.TrackFileFormat;
-import com.google.android.apps.mytracks.util.StringUtils;
-import com.google.android.maps.mytracks.R;
-*/
+
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
@@ -64,7 +54,7 @@ public class CsvTrackWriter{
 
   private final Context context;
   private PrintWriter printWriter;
-  private Track track;
+  private Track track = null;
   private int segmentIndex;
   private int pointIndex;
 
@@ -103,7 +93,7 @@ public class CsvTrackWriter{
   
 
   
-  public void writeBeginTrack(Location firstPoint) {
+  public void writeBeginTrack() {
     writeCommaSeparatedLine(context.getString(R.string.description_track_segment),
         context.getString(R.string.description_track_point),
         context.getString(R.string.description_location_latitude),
@@ -119,7 +109,12 @@ public class CsvTrackWriter{
         context.getString(R.string.description_sensor_battery_level));
   }
 
-
+  public void writeLocations(){
+	  assert(track!=null);
+	  for(Location location:track.getLocations()){
+		  writeLocation(location);
+	  }
+  }
 
   
   public void writeOpenSegment() {

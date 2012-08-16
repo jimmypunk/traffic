@@ -1,7 +1,14 @@
 package cmusv.mr.carbon.data;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
+import cmusv.mr.carbon.data.stats.TripStatistics;
+import cmusv.mr.carbon.db.DatabaseHelper;
+import cmusv.mr.carbon.io.file.CsvTrackWriter;
 import android.app.Service;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -14,6 +21,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.widget.Toast;
 
 public class DataUpdate implements LocationListener, SensorEventListener{
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -27,7 +35,12 @@ public class DataUpdate implements LocationListener, SensorEventListener{
 	private float[] previousEventValue = new float[]{0,0,0};
 	private float mDeltaAccelerometer = 0;
 	private String TAG = DataUpdate.class.getSimpleName();
+	private DatabaseHelper dbHelper;
+	private long recordingTrackId = -1L;
+	private boolean isRecording = false;
 	
+	
+
     private float deltaAccelerometerReading(float[] oldReading, float[] newReading){
     	float delta = 0;
     	for(int i = 0; i < 3; i ++){
@@ -38,13 +51,67 @@ public class DataUpdate implements LocationListener, SensorEventListener{
     	return delta;
     }
 	
-	
+	private Context mContext;
 	public DataUpdate(Context context){
 		mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 		mVibrator = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);
+		dbHelper = new DatabaseHelper(context);
+		mContext = context;
+	}
+	public void startNewTrack(){
+		long startTime = System.currentTimeMillis();
+		Track recordingTrack = new Track();
+		cmusv.mr.carbon.data.stats.TripStatistics trackStats = recordingTrack.getTripStatistics();
+	    trackStats.setStartTime(startTime);
+	    recordingTrackId = dbHelper.insertTrack(recordingTrack);
+	    Toast.makeText(mContext,"new track id:"+recordingTrackId, Toast.LENGTH_SHORT).show();
+	     
+	}
+	private boolean isTrackInProgress() {
+	    return recordingTrackId != -1 || isRecording;
+	  }
+	  private void endCurrentTrack() {
+		    if (!isTrackInProgress()) {
+		      return;
+		    }
+		    isRecording = false;
+		    Track recordedTrack = dbHelper.getTrack(recordingTrackId);
+		    if (recordedTrack != null) {
+		      long lastRecordedLocationId = dbHelper.getLastLocationId(recordingTrackId);
+		      if (lastRecordedLocationId >= 0 && recordedTrack.getStopId() >= 0) {
+		        recordedTrack.setStopId(lastRecordedLocationId);
+		      }
+		      TripStatistics tripStatistics = recordedTrack.getTripStatistics();
+		      tripStatistics.setStopTime(System.currentTimeMillis());
+		      tripStatistics.setTotalTime(tripStatistics.getStopTime() - tripStatistics.getStartTime());
+		      dbHelper.updateTrack(recordedTrack);
+		    }
+		    //showNotification();
+		    writeTrack2File(recordedTrack);
+		    recordingTrackId = -1L;
+		    
+		  }
+	public void writeTrack2File(Track track){
+		CsvTrackWriter writer = new CsvTrackWriter(mContext);
+		File file = new File(mContext.getCacheDir(), System.currentTimeMillis()+".csv");
+		Log.d(TAG,file.getAbsolutePath());
+		OutputStream out;
+		try {
+			out = new FileOutputStream(file);
+			writer.prepare(track,out);
+			writer.writeHeader();
+			writer.writeBeginTrack();
+			writer.writeLocations();
+			writer.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+
 	}
 	public void startRecording(){
+		startNewTrack();
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 		for (int i = 0; i < sensorTypes.length; i++) {
@@ -55,8 +122,10 @@ public class DataUpdate implements LocationListener, SensorEventListener{
 			}
 
 		}
+		isRecording = true;
 	}
 	public void stopRecording(){
+		endCurrentTrack();
 		mLocationManager.removeUpdates(this);
 		mSensorManager.unregisterListener(this);
 	}
@@ -67,7 +136,11 @@ public class DataUpdate implements LocationListener, SensorEventListener{
 		if (isBetterLocation(location, currentBestLocation)) {
 			currentBestLocation = location;
 			//send_location_msg(location);
-			Log.d("onLocationChanged","location:"+currentBestLocation.toString());
+			//Log.d("onLocationChanged","location:"+currentBestLocation.toString());
+			if(isRecording){
+				long rowId = dbHelper.insertTrackPoint(currentBestLocation, recordingTrackId);
+				Toast.makeText(mContext,"rowId:"+rowId+" location:"+currentBestLocation,Toast.LENGTH_SHORT).show();
+			}
 		}
 
 	}
