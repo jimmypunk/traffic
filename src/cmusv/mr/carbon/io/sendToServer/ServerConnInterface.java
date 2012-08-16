@@ -2,14 +2,22 @@ package cmusv.mr.carbon.io.sendToServer;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 public class ServerConnInterface {
   private static final String TAG = "ServerConnInterface";
@@ -146,4 +154,25 @@ public class ServerConnInterface {
     Log.e(TAG, "File is written");
 
   }
+  private void openHttpClient(){
+      try{
+          HttpClient client = new DefaultHttpClient();
+          HttpGet request = new HttpGet();
+          request.setURI(new URI("http://w3mentor.com/"));
+          HttpResponse response = client.execute(request);
+          BufferedReader in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+          StringBuffer sb = new StringBuffer("");
+          String line = "";
+          String NL = System.getProperty("line.separator");
+          while ((line = in.readLine()) != null) {
+              sb.append(line + NL);
+          }
+          in.close();
+          String page = sb.toString();
+          System.out.println(page);
+      } catch(Exception e){
+          e.printStackTrace();
+      }
+  } 
+  
 }
