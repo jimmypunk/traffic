@@ -1,9 +1,14 @@
 package cmusv.mr.carbon;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,17 +18,16 @@ import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.service.sensors.SensorLogService;
 import cmusv.mr.carbon.utils.ShareTools;
 
-
 public class TrafficLog extends Activity {
 	private Button startButton;
 	private Button stopButton;
 	private Spinner trafficSpinner;
-	private String[] trafficModeList = { "walk", "bike",
-			"car", "light rail" };
+	private String[] trafficModeList = { "walk", "bike", "car", "light rail" };
 	private String useChoice = null;
-	
+	private BroadcastReceiver receiver;
 	private ClientHelper mHelper;
-
+	public static final String ACTION = "android.intent.action.cmusv.mr.carbon.dataTransmit";
+	private final String TAG = TrafficLog.class.getSimpleName();
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -35,29 +39,47 @@ public class TrafficLog extends Activity {
 		stopButton.setOnClickListener(stopClickListener);
 		setPlaceAdaper();
 		serviceStateSetting();
-		if(!ShareTools.isSDCardExist()){
+		if (!ShareTools.isSDCardExist()) {
 			finish();
 		}
 		mHelper = new ClientHelper();
+
 		/*
-		 * server upload file template 
+		 * server upload file template
 		 * 
 		 * Thread t = new Thread(){
-			@Override
-			public void run(){
-				try{
-					mHelper.uploadFile("d35528c14af11f08881c8b924de396e4", "/sdcard/MyTracks/csv/louis.csv");
-				}
-				catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-		};
-		t.start();
-		*/
-		
-	}
+		 * 
+		 * @Override public void run(){ try{
+		 * mHelper.uploadFile("d35528c14af11f08881c8b924de396e4",
+		 * "/sdcard/MyTracks/csv/louis.csv"); } catch(Exception e){
+		 * e.printStackTrace(); } } }; t.start();
+		 */
+		setupBroadcastReceiver();
 
+	}
+	@Override
+	public void onDestroy(){
+		if(receiver != null)
+			unregisterReceiver(receiver);
+		super.onDestroy();
+	}
+	private void setupBroadcastReceiver() {
+		receiver = new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if(intent.hasExtra("phoneStatus")){
+					String message = intent.getStringExtra("phoneStatus");
+					Log.d(TAG,"phoneStatus: "+message);
+				}
+				
+			}
+
+		};
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(ACTION);
+		registerReceiver(receiver, filter);
+	}
 
 	private void setPlaceAdaper() {
 		ArrayAdapter<String> positionAdapter = new ArrayAdapter<String>(this,
@@ -92,8 +114,8 @@ public class TrafficLog extends Activity {
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager
 				.getRunningServices(Integer.MAX_VALUE)) {
-			if ("cmusv.mr.carbon.service.sensors.SensorLogService".equals(service.service
-					.getClassName())) {
+			if ("cmusv.mr.carbon.service.sensors.SensorLogService"
+					.equals(service.service.getClassName())) {
 				return true;
 			}
 		}
@@ -102,7 +124,7 @@ public class TrafficLog extends Activity {
 
 	private Button.OnClickListener startClickListener = new Button.OnClickListener() {
 		public void onClick(View arg0) {
-			
+
 			Bundle bundle = new Bundle();
 			bundle.putString("position", useChoice);
 			Intent intent = new Intent(TrafficLog.this, SensorLogService.class);
@@ -116,7 +138,6 @@ public class TrafficLog extends Activity {
 	private Button.OnClickListener stopClickListener = new Button.OnClickListener() {
 		public void onClick(View arg0) {
 
-			
 			Intent intent = new Intent(TrafficLog.this, SensorLogService.class);
 			stopService(intent);
 			startButton.setEnabled(true);

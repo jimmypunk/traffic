@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Toast;
+import cmusv.mr.carbon.TrafficLog;
 import cmusv.mr.carbon.data.stats.TripStatistics;
 import cmusv.mr.carbon.db.DatabaseHelper;
 import cmusv.mr.carbon.io.file.CsvTrackWriter;
@@ -183,7 +185,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	public void onProviderDisabled(String provider) {
 	}
 
-	protected boolean isBetterLocation(Location location,
+	private boolean isBetterLocation(Location location,
 			Location currentBestLocation) {
 		if (currentBestLocation == null) {
 			// A new location is always better than no location
@@ -254,15 +256,24 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			previousEventValue = event.values.clone();
 			mDeltaAccelerometer = lowpassFilter(newDeltaAccelerometer,
 					mDeltaAccelerometer, 0.6f);
+			
+			
+			Intent intent = new Intent();
+		    intent.setAction(TrafficLog.ACTION);
+		    
+		    
 			if (isMoving(mDeltaAccelerometer)) {
 				Log.d(TAG, "is moving");
 				PhoneStatus.isMoving = PhoneStatus.moveStatus.move;
+				intent.putExtra("phoneStatus", "move");
 
 			} else {
 				Log.d(TAG, "is not moving");
 				PhoneStatus.isMoving = PhoneStatus.moveStatus.still;
+				intent.putExtra("phoneStatus", "stop");
 
 			}
+			mContext.sendBroadcast(intent);
 		}
 
 	}
