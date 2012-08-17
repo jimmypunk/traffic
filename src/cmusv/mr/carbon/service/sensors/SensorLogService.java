@@ -6,7 +6,7 @@ import java.util.Date;
 import cmusv.mr.carbon.TrafficLog;
 import cmusv.mr.carbon.data.DataUpdate;
 
-import cmusv.mr.carbon.R;
+import CMU.SV.R;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

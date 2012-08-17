@@ -12,7 +12,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-import cmusv.mr.carbon.R;
+import CMU.SV.R;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;

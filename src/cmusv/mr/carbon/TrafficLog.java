@@ -1,10 +1,10 @@
 package cmusv.mr.carbon;
 import java.io.File;
 
+import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.service.sensors.SensorLogService;
 import cmusv.mr.carbon.utils.ShareTools;
-
-import cmusv.mr.carbon.R;
+import CMU.SV.R;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -27,6 +27,8 @@ public class TrafficLog extends Activity {
 	private String[] trafficModeList = { "walk", "bike",
 			"car", "light rail" };
 	private String useChoice = null;
+	
+	private ClientHelper mHelper;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -42,7 +44,24 @@ public class TrafficLog extends Activity {
 		if(!ShareTools.isSDCardExist()){
 			finish();
 		}
-
+		mHelper = new ClientHelper();
+		/*
+		 * server upload file template 
+		 * 
+		 * Thread t = new Thread(){
+			@Override
+			public void run(){
+				try{
+					mHelper.uploadFile("d35528c14af11f08881c8b924de396e4", "/sdcard/MyTracks/csv/louis.csv");
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		};
+		t.start();
+		*/
+		
 	}
 
 
