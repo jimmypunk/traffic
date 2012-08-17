@@ -19,11 +19,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
 
-import CMU.SV.R;
-import cmusv.mr.carbon.data.Track;
-import cmusv.mr.carbon.utils.StringUtils;
 import android.content.Context;
 import android.location.Location;
+import cmusv.mr.carbon.R;
+import cmusv.mr.carbon.data.Track;
+import cmusv.mr.carbon.utils.StringUtils;
 
 
 

@@ -14,10 +14,6 @@
  * the License.
  */
 package cmusv.mr.carbon.utils;
-import CMU.SV.R;
-import android.content.Context;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -26,6 +22,11 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
+import cmusv.mr.carbon.R;
 
 /**
  * Various string manipulation methods.

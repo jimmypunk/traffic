@@ -1,12 +1,5 @@
 package cmusv.mr.carbon.service.sensors;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import cmusv.mr.carbon.TrafficLog;
-import cmusv.mr.carbon.data.DataUpdate;
-
-import CMU.SV.R;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,6 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import cmusv.mr.carbon.R;
+import cmusv.mr.carbon.TrafficLog;
+import cmusv.mr.carbon.data.DataUpdate;
 
 public class SensorLogService extends Service {
 	private DataUpdate dataUpdate;
