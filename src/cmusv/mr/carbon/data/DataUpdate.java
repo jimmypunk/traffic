@@ -5,13 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+
 import android.app.Service;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,6 +30,9 @@ public class DataUpdate implements LocationListener, SensorEventListener {
 	private LocationManager mLocationManager;
 	private SensorManager mSensorManager;
 	private Vibrator mVibrator;
+    private int minRecordingDistance = 5; // 5m
+    private int maxRecordingDistance = 200; // 200m
+    private int minRequiredAccuracy = 100;
 	private int sensorTypes[] = new int[] { Sensor.TYPE_ACCELEROMETER };
 	private static final float NS2S = 1.0f / 1000000000.0f;
 	private float[] previousEventValue = new float[] { 0, 0, 0 };
@@ -259,7 +262,11 @@ public class DataUpdate implements LocationListener, SensorEventListener {
 		}
 
 	}
-
+	private boolean isMoving(Location prevLocation, Location currLocation){
+		if(prevLocation.distanceTo(currLocation) == 1)
+			return false;
+		return true;
+	}
 	private boolean isMoving(float deltaAccelerometer) {
 		Log.d(TAG, "" + deltaAccelerometer);
 		return (deltaAccelerometer > 1);

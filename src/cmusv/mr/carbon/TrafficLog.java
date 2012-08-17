@@ -1,23 +1,17 @@
 package cmusv.mr.carbon;
-import java.io.File;
-
-import cmusv.mr.carbon.io.sendToServer.ClientHelper;
-import cmusv.mr.carbon.service.sensors.SensorLogService;
-import cmusv.mr.carbon.utils.ShareTools;
-import CMU.SV.R;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.content.Context;
 import android.content.Intent;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import cmusv.mr.carbon.io.sendToServer.ClientHelper;
+import cmusv.mr.carbon.service.sensors.SensorLogService;
+import cmusv.mr.carbon.utils.ShareTools;
 
 
 public class TrafficLog extends Activity {
