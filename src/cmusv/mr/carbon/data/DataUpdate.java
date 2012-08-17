@@ -41,7 +41,9 @@ public class DataUpdate implements LocationListener, SensorEventListener {
 	private DatabaseHelper dbHelper;
 	private long recordingTrackId = -1L;
 	private boolean isRecording = false;
+	private final long timeWindow = 15*1000;
 
+	private DataWindow dataWindow;
 	private float deltaAccelerometerReading(float[] oldReading,
 			float[] newReading) {
 		float delta = 0;
@@ -141,6 +143,7 @@ public class DataUpdate implements LocationListener, SensorEventListener {
 			}
 
 		}
+		dataWindow = new DataWindow(timeWindow);
 		isRecording = true;
 	}
 
@@ -163,8 +166,9 @@ public class DataUpdate implements LocationListener, SensorEventListener {
 			if (isRecording) {
 				long rowId = dbHelper.insertTrackPoint(currentBestLocation,
 						recordingTrackId);
-				Log.d(TAG, "rowId:" + rowId + " location:"
-						+ currentBestLocation);
+				Log.d(TAG, "rowId:" + rowId + " location:"+currentBestLocation);
+				dataWindow.addDataToWindow(currentBestLocation);
+				//dataWindow.getCurrentWindow();
 			}
 		}
 
