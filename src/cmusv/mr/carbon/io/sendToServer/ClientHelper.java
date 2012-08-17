@@ -30,17 +30,21 @@ public class ClientHelper {
     private String mUsername;
     private String mPassword;
     
+    private String TAG ="cool";
     private String API_HOST_SERVER = "http://209.129.244.24/louis/GumballServer/php";
     
     public ClientHelper(){
         mHttpClient = new DefaultHttpClient();
     }
+    
+    
     public ClientHelper(String account, String password){
         mUsername = account;
         mPassword = password;
         mHttpClient = new DefaultHttpClient();
     }    
     
+    /* register for a new user */
     public JSONObject register(String username, String password) throws Exception{
         HttpGet get = new HttpGet(API_HOST_SERVER + "/moblie/createNewUser.php?account=" + username + "&password=" + password);
         get.setHeader("Accept-Encoding", "gzip");
@@ -50,6 +54,10 @@ public class ClientHelper {
         return json;
     }
     
+    /* use for upload something to server 
+     *         need to use token
+     *  
+     */ 
     public String uploadFile(String token, String filepath) throws Exception{
 
     	HttpPost post = new HttpPost(API_HOST_SERVER + "/getUploadFile.php");
@@ -68,7 +76,7 @@ public class ClientHelper {
     
     private JSONObject parseResponseToJson(HttpResponse response) throws IOException, JSONException {
         String result = streamToString(getInputStream(response));
-        Log.d("cool", "Parsing: " + result);
+        Log.d(TAG, "Parsing: " + result);
         
         JSONObject json = new JSONObject(result);
         return json;
@@ -76,7 +84,7 @@ public class ClientHelper {
     
     private String parseResponseToString(HttpResponse response) throws IOException {
     	String result = streamToString(getInputStream(response));
-    	Log.d("cool", "Gettin: " + result);
+    	Log.d(TAG, "Getting: " + result);
     	
     	return result;
     }
