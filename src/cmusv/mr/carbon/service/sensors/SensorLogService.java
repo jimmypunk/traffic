@@ -11,10 +11,10 @@ import android.os.IBinder;
 import android.util.Log;
 import cmusv.mr.carbon.R;
 import cmusv.mr.carbon.TrafficLog;
-import cmusv.mr.carbon.data.DataUpdate;
+import cmusv.mr.carbon.data.DataCollector;
 
 public class SensorLogService extends Service {
-	private DataUpdate dataUpdate;
+	private DataCollector dataUpdate;
 	private String userTrafficeMode = null;
 	private String TAG = "SensorLogService";
 	@Override
@@ -30,7 +30,7 @@ public class SensorLogService extends Service {
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		userTrafficeMode = bundle.getString("position");
 		Log.d("traffic", userTrafficeMode);
-		dataUpdate = new DataUpdate(this);
+		dataUpdate = new DataCollector(this);
 		
 		/*String logDateTimeString = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());*/

@@ -23,7 +23,7 @@ import cmusv.mr.carbon.data.stats.TripStatistics;
 import cmusv.mr.carbon.db.DatabaseHelper;
 import cmusv.mr.carbon.io.file.CsvTrackWriter;
 
-public class DataUpdate implements LocationListener, SensorEventListener {
+public class DataCollector implements LocationListener, SensorEventListener {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 	private Location currentBestLocation;
 	private Location previousBestLocation;
@@ -37,7 +37,7 @@ public class DataUpdate implements LocationListener, SensorEventListener {
 	private static final float NS2S = 1.0f / 1000000000.0f;
 	private float[] previousEventValue = new float[] { 0, 0, 0 };
 	private float mDeltaAccelerometer = 0;
-	private String TAG = DataUpdate.class.getSimpleName();
+	private String TAG = DataCollector.class.getSimpleName();
 	private DatabaseHelper dbHelper;
 	private long recordingTrackId = -1L;
 	private boolean isRecording = false;
@@ -57,7 +57,7 @@ public class DataUpdate implements LocationListener, SensorEventListener {
 
 	private Context mContext;
 
-	public DataUpdate(Context context) {
+	public DataCollector(Context context) {
 		mLocationManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
 		mSensorManager = (SensorManager) context
