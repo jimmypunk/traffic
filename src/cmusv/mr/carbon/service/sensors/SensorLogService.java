@@ -14,8 +14,7 @@ import cmusv.mr.carbon.TrafficLog;
 import cmusv.mr.carbon.data.DataCollector;
 
 public class SensorLogService extends Service {
-	private DataCollector dataUpdate;
-	private String userTrafficeMode = null;
+	private DataCollector dataCollector;
 	private String TAG = "SensorLogService";
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -25,17 +24,14 @@ public class SensorLogService extends Service {
 	private NotificationManager mNotificationManager;
 	@Override
 	public void onStart(Intent intent, int startId) {
-
-		Bundle bundle = intent.getExtras();
+		
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		userTrafficeMode = bundle.getString("position");
-		Log.d("traffic", userTrafficeMode);
-		dataUpdate = new DataCollector(this);
+		dataCollector = new DataCollector(this);
 		
 		/*String logDateTimeString = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());*/
 		Log.d(TAG,"onStart");
-		dataUpdate.startRecording();
+		dataCollector.startRecording();
 		isRecording = true;
 		showNotification();
 		super.onStart(intent, startId);
@@ -45,7 +41,7 @@ public class SensorLogService extends Service {
 
 	@Override
 	public void onDestroy() {
-		dataUpdate.stopRecording();
+		dataCollector.stopRecording();
 		isRecording = false;
 		showNotification();
 		super.onDestroy();

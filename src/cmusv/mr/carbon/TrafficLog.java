@@ -13,7 +13,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.service.sensors.SensorLogService;
 import cmusv.mr.carbon.utils.ShareTools;
@@ -26,6 +28,7 @@ public class TrafficLog extends Activity {
 	private String useChoice = null;
 	private BroadcastReceiver receiver;
 	private ClientHelper mHelper;
+	private ImageView imageView;
 	public static final String ACTION = "android.intent.action.cmusv.mr.carbon.dataTransmit";
 	private final String TAG = TrafficLog.class.getSimpleName();
 	@Override
@@ -43,7 +46,9 @@ public class TrafficLog extends Activity {
 			finish();
 		}
 		mHelper = new ClientHelper();
-
+		imageView = (ImageView)findViewById(R.id.status_img);
+		ImageAnimation animation = new ImageAnimation(this, imageView);
+		animation.startAnimation(animation.test);
 		/*
 		 * server upload file template
 		 * 
@@ -68,9 +73,13 @@ public class TrafficLog extends Activity {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				if(intent.hasExtra("phoneStatus")){
-					String message = intent.getStringExtra("phoneStatus");
-					Log.d(TAG,"phoneStatus: "+message);
+				if(intent.hasExtra("isMoving") && intent.hasExtra("dataType")){
+					
+					boolean isMoving = intent.getBooleanExtra("isMoving", false);
+					String dataType = intent.getStringExtra("dataType");
+					Toast.makeText(getApplicationContext(),"phoneStatus: ismoving"+isMoving + " dataType:"+dataType,Toast.LENGTH_SHORT).show();
+					Log.d(TAG,"phoneStatus: ismoving"+isMoving + " dataType:"+dataType);
+					
 				}
 				
 			}

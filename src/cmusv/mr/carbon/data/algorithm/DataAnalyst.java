@@ -8,12 +8,10 @@ public class DataAnalyst {
 	/*
 	 *  Define all the transportation Mode in Integer
 	 */
-	private static int ERROR = -1;
-	private static int WALKING = 0;
-	private static int BIKING = 1;
-	private static int TRAIN = 2;
-	private static int DRIVING = 3;
-	
+
+	public enum DataType{
+		ERROR, WALKING, BIKING, TRAIN, DRIVING
+	};
 	/*
 	 *  Variable needed for Rule-based algorithm...
 	 */
@@ -33,7 +31,7 @@ public class DataAnalyst {
 		mKnowledgeOfLocations = data;
 	}
 
-	public int getAnalysisResult() {
+	public DataType getAnalysisResult() {
 		if (mKnowledgeOfLocations != null) {
 			double averageSpeed = mTools.averageSpeed(mKnowledgeOfLocations);
 			double maxSpeed = mTools.maxSpeed(mKnowledgeOfLocations);
@@ -44,23 +42,23 @@ public class DataAnalyst {
 			
 			return this.analyze(averageSpeed, maxSpeed, averageAccuracy, averageBearingChange, varianceSpeed, averageAcceleration);
 		} 
-		return ERROR;
+		return DataType.ERROR;
 	}
 	
 	public void setAnotherTripData(ArrayList<Location> l){
 		mKnowledgeOfLocations = l;
 	}
 	
-	public int analyze(double averageSpeed, double maxSpeed, double averageAccuracy, double averageBearingChange, double varianceSpeed, double averageAcceleration){
+	public DataType analyze(double averageSpeed, double maxSpeed, double averageAccuracy, double averageBearingChange, double varianceSpeed, double averageAcceleration){
 		if(maxSpeed > SPEED_LIMIT){
 			/*
 			 *  possibly drive or train
 			 */
 			if(averageSpeed > SPEED_CAR){
-				return DRIVING;
+				return DataType.DRIVING;
 			}
 			else{
-				return TRAIN;
+				return DataType.TRAIN;
 			}
 		}
 		else{
@@ -68,10 +66,10 @@ public class DataAnalyst {
 			 *  possibly walk or bike 
 			 */ 
 			if(maxSpeed > SPEED_MAX_WALK){
-				return BIKING;
+				return DataType.BIKING;
 			}
 			else {
-				return WALKING;
+				return DataType.WALKING;
 			}
 		}
 		//return ERROR;

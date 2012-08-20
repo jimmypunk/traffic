@@ -21,6 +21,8 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Toast;
 import cmusv.mr.carbon.TrafficLog;
+import cmusv.mr.carbon.data.algorithm.DataAnalyst;
+import cmusv.mr.carbon.data.algorithm.DataAnalyst.DataType;
 import cmusv.mr.carbon.data.stats.TripStatistics;
 import cmusv.mr.carbon.db.DatabaseHelper;
 import cmusv.mr.carbon.io.file.CsvTrackWriter;
@@ -44,6 +46,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	private long recordingTrackId = -1L;
 	private boolean isRecording = false;
 	private final long timeWindow = 15*1000;
+	private DataAnalyst dataAnalyst;
 
 	private DataWindow dataWindow;
 	private float deltaAccelerometerReading(float[] oldReading,
@@ -68,6 +71,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 				.getSystemService(Service.VIBRATOR_SERVICE);
 
 		dbHelper = new DatabaseHelper(context);
+		dataAnalyst = new DataAnalyst(null);
 		mContext = context;
 	}
 
@@ -165,12 +169,20 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			currentBestLocation = location;
 			// send_location_msg(location);
 			// Log.d("onLocationChanged","location:"+currentBestLocation.toString());
+			long currentTime = location.getTime();
 			if (isRecording) {
 				long rowId = dbHelper.insertTrackPoint(currentBestLocation,
 						recordingTrackId);
 				Log.d(TAG, "rowId:" + rowId + " location:"+currentBestLocation);
+				
+				Intent intent = new Intent();
+				intent.setAction(TrafficLog.ACTION);
 				dataWindow.addDataToWindow(currentBestLocation);
-				//dataWindow.getCurrentWindow();
+				dataAnalyst.setAnotherTripData(dataWindow.getCurrentWindow(currentTime));
+				intent.putExtra("dataType",dataAnalyst.getAnalysisResult().toString());
+				intent.putExtra("isMoving", isMoving(mDeltaAccelerometer));
+				mContext.sendBroadcast(intent);
+				
 			}
 		}
 
@@ -257,23 +269,6 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			mDeltaAccelerometer = lowpassFilter(newDeltaAccelerometer,
 					mDeltaAccelerometer, 0.6f);
 			
-			
-			Intent intent = new Intent();
-		    intent.setAction(TrafficLog.ACTION);
-		    
-		    
-			if (isMoving(mDeltaAccelerometer)) {
-				Log.d(TAG, "is moving");
-				PhoneStatus.isMoving = PhoneStatus.moveStatus.move;
-				intent.putExtra("phoneStatus", "move");
-
-			} else {
-				Log.d(TAG, "is not moving");
-				PhoneStatus.isMoving = PhoneStatus.moveStatus.still;
-				intent.putExtra("phoneStatus", "stop");
-
-			}
-			mContext.sendBroadcast(intent);
 		}
 
 	}

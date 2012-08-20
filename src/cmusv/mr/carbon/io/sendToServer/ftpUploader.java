@@ -10,7 +10,7 @@ import com.jcraft.jsch.Session;
 
 import android.util.Log;
 
-public class ftpUploader {
+public class FtpUploader {
 
 	private static String username = "";
 	private static String password = "";
