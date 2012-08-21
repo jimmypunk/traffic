@@ -5,10 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-
+import java.util.Locale;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,21 +23,20 @@ import android.util.Log;
 import android.widget.Toast;
 import cmusv.mr.carbon.TrafficLog;
 import cmusv.mr.carbon.data.algorithm.DataAnalyst;
-import cmusv.mr.carbon.data.algorithm.DataAnalyst.DataType;
 import cmusv.mr.carbon.data.stats.TripStatistics;
 import cmusv.mr.carbon.db.DatabaseHelper;
 import cmusv.mr.carbon.io.file.CsvTrackWriter;
+import cmusv.mr.carbon.utils.LocationUtils;
 
 public class DataCollector implements LocationListener, SensorEventListener {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
-	private Location currentBestLocation;
-	private Location previousBestLocation;
 	private LocationManager mLocationManager;
 	private SensorManager mSensorManager;
 	private Vibrator mVibrator;
-    private int minRecordingDistance = 5; // 5m
-    private int maxRecordingDistance = 200; // 200m
-    private int minRequiredAccuracy = 100;
+	private double length;
+	private int minRecordingDistance = 5; // 5m
+	private int maxRecordingDistance = 200; // 200m
+	private int minRequiredAccuracy = 100;
 	private int sensorTypes[] = new int[] { Sensor.TYPE_ACCELEROMETER };
 	private static final float NS2S = 1.0f / 1000000000.0f;
 	private float[] previousEventValue = new float[] { 0, 0, 0 };
@@ -45,10 +45,13 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	private DatabaseHelper dbHelper;
 	private long recordingTrackId = -1L;
 	private boolean isRecording = false;
-	private final long timeWindow = 15*1000;
+	private final long timeWindow = 15 * 1000;
 	private DataAnalyst dataAnalyst;
-
+	private Location lastLocation;
 	private DataWindow dataWindow;
+	private boolean isMoving;
+	private Location lastValidLocation;
+	private Track recordingTrack;
 	private float deltaAccelerometerReading(float[] oldReading,
 			float[] newReading) {
 		float delta = 0;
@@ -72,19 +75,21 @@ public class DataCollector implements LocationListener, SensorEventListener {
 
 		dbHelper = new DatabaseHelper(context);
 		dataAnalyst = new DataAnalyst(null);
+		
 		mContext = context;
 	}
 
 	public void startNewTrack() {
 		long startTime = System.currentTimeMillis();
-		Track recordingTrack = new Track();
-		cmusv.mr.carbon.data.stats.TripStatistics trackStats = recordingTrack
+		Track track = new Track();
+		cmusv.mr.carbon.data.stats.TripStatistics trackStats = track
 				.getTripStatistics();
 		trackStats.setStartTime(startTime);
-		recordingTrackId = dbHelper.insertTrack(recordingTrack);
+		recordingTrackId = dbHelper.insertTrack(track);
+		length = 0;
 		Toast.makeText(mContext, "new track id:" + recordingTrackId,
 				Toast.LENGTH_SHORT).show();
-	
+
 	}
 
 	private boolean isTrackInProgress() {
@@ -109,13 +114,14 @@ public class DataCollector implements LocationListener, SensorEventListener {
 					- tripStatistics.getStartTime());
 			dbHelper.updateTrack(recordedTrack);
 		}
-		
+
 		writeTrack2File(recordedTrack);
+
 		recordingTrackId = -1L;
 
 	}
 
-	public void writeTrack2File(Track track) {
+	public File writeTrack2File(Track track) {
 		CsvTrackWriter writer = new CsvTrackWriter(mContext);
 		File file = new File(mContext.getExternalCacheDir(),
 				System.currentTimeMillis() + ".csv");
@@ -132,6 +138,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return file;
 
 	}
 
@@ -139,8 +146,10 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		startNewTrack();
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 				0, 0, this);
-		mLocationManager.requestLocationUpdates(
-				LocationManager.NETWORK_PROVIDER, 0, 0, this);
+		/*
+		 * mLocationManager.requestLocationUpdates(
+		 * LocationManager.NETWORK_PROVIDER, 0, 0, this);
+		 */
 		for (int i = 0; i < sensorTypes.length; i++) {
 			Sensor mSensor = mSensorManager.getDefaultSensor(sensorTypes[i]);
 			if (mSensor != null) {
@@ -159,33 +168,25 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		mSensorManager.unregisterListener(this);
 	}
 
-
-
 	/* Location parts */
 	@Override
 	public void onLocationChanged(Location location) {
+		onLocationChangedAsync(location);
 
-		if (isBetterLocation(location, currentBestLocation)) {
-			currentBestLocation = location;
-			// send_location_msg(location);
-			// Log.d("onLocationChanged","location:"+currentBestLocation.toString());
-			long currentTime = location.getTime();
-			if (isRecording) {
-				long rowId = dbHelper.insertTrackPoint(currentBestLocation,
-						recordingTrackId);
-				Log.d(TAG, "rowId:" + rowId + " location:"+currentBestLocation);
-				
-				Intent intent = new Intent();
-				intent.setAction(TrafficLog.ACTION);
-				dataWindow.addDataToWindow(currentBestLocation);
-				dataAnalyst.setAnotherTripData(dataWindow.getCurrentWindow(currentTime));
-				intent.putExtra("dataType",dataAnalyst.getAnalysisResult().toString());
-				intent.putExtra("isMoving", isMoving(mDeltaAccelerometer));
-				mContext.sendBroadcast(intent);
-				
-			}
+	}
+
+	public void updateDataTypeMessage(Location locationToInsert) {
+		if (isRecording) {
+
+			long time = locationToInsert.getTime();
+			Intent intent = new Intent();
+			intent.setAction(TrafficLog.ACTION);
+			dataWindow.addDataToWindow(locationToInsert);
+			dataAnalyst.setAnotherTripData(dataWindow.getCurrentWindow(time));
+			intent.putExtra("dataType", dataAnalyst.getAnalysisResult()
+					.toString());
+			mContext.sendBroadcast(intent);
 		}
-
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -195,6 +196,217 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	}
 
 	public void onProviderDisabled(String provider) {
+	}
+
+	private void onLocationChangedAsync(Location location) {
+
+		try {
+			// Don't record if the service has been asked to pause recording:
+			if (!isRecording) {
+				Log.w(TAG, "Not recording because recording has been paused.");
+				return;
+			}
+
+			// This should never happen, but just in case (we really don't want
+			// the
+			// service to crash):
+			if (location == null) {
+				Log.w(TAG, "Location changed, but location is null.");
+				return;
+			}
+
+			// Don't record if the accuracy is too bad:
+			if (location.getAccuracy() > minRequiredAccuracy) {
+				Log.d(TAG, "Not recording. Bad accuracy.");
+				return;
+			}
+
+			// At least one track must be available for appending points:
+			recordingTrack = getRecordingTrack();
+			if (recordingTrack == null) {
+				Log.d(TAG, "Not recording. No track to append to available.");
+				return;
+			}
+
+			// Update the idle time if needed.
+			/*
+			 * locationListenerPolicy.updateIdleTime(statsBuilder.getIdleTime());
+			 * addLocationToStats(location); if (currentRecordingInterval !=
+			 * locationListenerPolicy.getDesiredPollingInterval()) {
+			 * registerLocationListener(); }
+			 */
+
+			Location lastRecordedLocation = dbHelper.getLastLocation();
+			double distanceToLastRecorded = Double.POSITIVE_INFINITY;
+			if (lastRecordedLocation != null) {
+				distanceToLastRecorded = location
+						.distanceTo(lastRecordedLocation);
+			}
+			double distanceToLast = Double.POSITIVE_INFINITY;
+			if (lastLocation != null) {
+				distanceToLast = location.distanceTo(lastLocation);
+			}
+			/*
+			 * boolean hasSensorData = sensorManager != null &&
+			 * sensorManager.isEnabled() && sensorManager.getSensorDataSet() !=
+			 * null && sensorManager.isSensorDataSetValid();
+			 */
+			// If the user has been stationary for two recording just record the
+			// first
+			// two and ignore the rest. This code will only have an effect if
+			// the
+			// maxRecordingDistance = 0
+			if (distanceToLast == 0 /* && !hasSensorData */) {
+				if (isMoving) {
+					Log.d(TAG, "Found two identical locations.");
+					isMoving = false;
+					if (lastLocation != null && lastRecordedLocation != null
+							&& !lastRecordedLocation.equals(lastLocation)) {
+						// Need to write the last location. This will happen
+						// when
+						// lastRecordedLocation.distance(lastLocation) <
+						// minRecordingDistance
+						if (!insertLocation(lastLocation, lastRecordedLocation,
+								recordingTrackId)) {
+							return;
+						}
+					}
+				} else {
+					Log.d(TAG,
+							"Not recording. More than two identical locations.");
+				}
+			} else if (distanceToLastRecorded > minRecordingDistance
+			/* || hasSensorData */) {
+				if (lastLocation != null && !isMoving) {
+					// Last location was the last stationary location. Need to
+					// go back and
+					// add it.
+					if (!insertLocation(lastLocation, lastRecordedLocation,
+							recordingTrackId)) {
+						return;
+					}
+					isMoving = true;
+				}
+
+				// If separation from last recorded point is too large insert a
+				// separator to indicate end of a segment:
+				boolean startNewSegment = lastRecordedLocation != null
+						&& lastRecordedLocation.getLatitude() < 90
+						&& distanceToLastRecorded > maxRecordingDistance
+						&& recordingTrack.getStartId() >= 0;
+				if (startNewSegment) {
+					// Insert a separator point to indicate start of new track:
+					Log.d(TAG, "Inserting a separator.");
+					Location separator = new Location(
+							LocationManager.GPS_PROVIDER);
+					separator.setLongitude(0);
+					separator.setLatitude(100);
+					separator.setTime(lastRecordedLocation.getTime());
+					dbHelper.insertTrackPoint(separator, recordingTrackId);
+				}
+
+				if (!insertLocation(location, lastRecordedLocation,
+						recordingTrackId)) {
+					return;
+				}
+			} else {
+				Log.d(TAG,
+						String.format(
+								Locale.US,
+								"Not recording. Distance to last recorded point (%f m) is less than %d m.",
+								distanceToLastRecorded, minRecordingDistance));
+				// Return here so that the location is NOT recorded as the last
+				// location.
+				return;
+			}
+		} catch (Error e) {
+			// Probably important enough to rethrow.
+			Log.e(TAG, "Error in onLocationChanged", e);
+			throw e;
+		} catch (RuntimeException e) {
+			// Safe usually to trap exceptions.
+			Log.e(TAG, "Trapping exception in onLocationChanged", e);
+			throw e;
+		}
+		lastLocation = location;
+	}
+
+	/**
+	 * Inserts a new location in the track points db and updates the
+	 * corresponding track in the track db.
+	 * 
+	 * @param location
+	 *            the location to be inserted
+	 * @param lastRecordedLocation
+	 *            the last recorded location before this one (or null if none)
+	 * @param trackId
+	 *            the id of the track
+	 * @return true if successful. False if SQLite3 threw an exception.
+	 */
+	private boolean insertLocation(Location location,
+			Location lastRecordedLocation, long trackId) {
+
+		// Keep track of length along recorded track (needed when a waypoint is
+		// inserted):
+		if (LocationUtils.isValidLocation(location)) {
+			if (lastValidLocation != null) {
+				length += location.distanceTo(lastValidLocation);
+			}
+			lastValidLocation = location;
+		}
+
+		// Insert the new location:
+		try {
+			Location locationToInsert = location;
+			/*
+			 * if (sensorManager != null && sensorManager.isEnabled()) {
+			 * SensorDataSet sd = sensorManager.getSensorDataSet(); if (sd !=
+			 * null && sensorManager.isSensorDataSetValid()) { locationToInsert
+			 * = new MyTracksLocation(location, sd); } }
+			 */
+			long pointId = dbHelper.insertTrackPoint(locationToInsert, trackId);
+			Log.d(TAG, "rowId:" + pointId + " location:" + locationToInsert);
+
+			updateDataTypeMessage(locationToInsert);
+
+			// Update the current track:
+			if (lastRecordedLocation != null
+					&& lastRecordedLocation.getLatitude() < 90) {
+				/*
+				 * TripStatistics tripStatistics = statsBuilder.getStatistics();
+				 * tripStatistics.setStopTime(System.currentTimeMillis());
+				 */
+
+				if (recordingTrack.getStartId() < 0) {
+					recordingTrack.setStartId(pointId);
+				}
+				recordingTrack.setStopId(pointId);
+				recordingTrack.setNumberOfPoints(recordingTrack
+						.getNumberOfPoints() + 1);
+				// recordingTrack.setTripStatistics(tripStatistics);
+				dbHelper.updateTrack(recordingTrack);
+				// updateCurrentWaypoint();
+			}
+		} catch (SQLiteException e) {
+			// Insert failed, most likely because of SqlLite error code 5
+			// (SQLite_BUSY). This is expected to happen extremely rarely (if
+			// our
+			// listener gets invoked twice at about the same time).
+			Log.w(TAG, "Caught SQLiteException: " + e.getMessage(), e);
+			return false;
+		}
+		/*
+		 * announcementExecutor.update(); splitExecutor.update();
+		 */
+		return true;
+	}
+
+	private Track getRecordingTrack() {
+		if (recordingTrackId < 0) {
+			return null;
+		}
+
+		return dbHelper.getTrack(recordingTrackId);
 	}
 
 	private boolean isBetterLocation(Location location,
@@ -268,15 +480,17 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			previousEventValue = event.values.clone();
 			mDeltaAccelerometer = lowpassFilter(newDeltaAccelerometer,
 					mDeltaAccelerometer, 0.6f);
-			
+			updateIsMovingMessage(mDeltaAccelerometer);
 		}
 
 	}
-	private boolean isMoving(Location prevLocation, Location currLocation){
-		if(prevLocation.distanceTo(currLocation) == 1)
+
+	private boolean isMoving(Location prevLocation, Location currLocation) {
+		if (prevLocation.distanceTo(currLocation) >= 1)
 			return false;
 		return true;
 	}
+
 	private boolean isMoving(float deltaAccelerometer) {
 		Log.d(TAG, "" + deltaAccelerometer);
 		return (deltaAccelerometer > 1);
@@ -287,6 +501,13 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		// TODO Auto-generated method stub
 		Log.d("SensorEventListener", "onAccuracyChanged called");
 
+	}
+
+	public void updateIsMovingMessage(float deltaAccelerometer) {
+		Intent intent = new Intent();
+		intent.setAction(TrafficLog.ACTION);
+		intent.putExtra("isMoving", isMoving(deltaAccelerometer));
+		mContext.sendBroadcast(intent);
 	}
 
 	private float lowpassFilter(float newValue, float oldValue, float alpha) {

@@ -1,5 +1,4 @@
 package cmusv.mr.carbon;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -7,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,39 +15,55 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.service.sensors.SensorLogService;
 import cmusv.mr.carbon.utils.ShareTools;
+import cmusv.mr.carbon.utils.SharepreferenceHelper;
 
 public class TrafficLog extends Activity {
 	private Button startButton;
 	private Button stopButton;
-	private Spinner trafficSpinner;
-	private String[] trafficModeList = { "walk", "bike", "car", "light rail" };
+	//private Spinner trafficSpinner;
+	//private String[] trafficModeList = { "walk", "bike", "car", "light rail" };
 	private String useChoice = null;
 	private BroadcastReceiver receiver;
 	private ClientHelper mHelper;
-	private ImageView imageView;
+	private ImageView statusImage;
+	private TextView statusText;
 	public static final String ACTION = "android.intent.action.cmusv.mr.carbon.dataTransmit";
 	private final String TAG = TrafficLog.class.getSimpleName();
+	private String movingStatus = "moving:";
+	private String activityStatus = "dataType:";
+	private SharepreferenceHelper preferenceHelper;
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		
 		setContentView(R.layout.main);
-		trafficSpinner = (Spinner) findViewById(R.id.position);
+		SharedPreferences settings = getSharedPreferences("account", MODE_PRIVATE);
+		preferenceHelper = new SharepreferenceHelper(settings);
+		String account = preferenceHelper.getUserAccount();
+		if(account == null){
+			Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+			startActivity(i);
+		}
+		//trafficSpinner = (Spinner) findViewById(R.id.position);
 		startButton = (Button) findViewById(R.id.startButton);
 		stopButton = (Button) findViewById(R.id.stopButton);
 		startButton.setOnClickListener(startClickListener);
 		stopButton.setOnClickListener(stopClickListener);
-		setPlaceAdaper();
+		statusText = (TextView) findViewById(R.id.status_text);
+		//setPlaceAdaper();
 		serviceStateSetting();
 		if (!ShareTools.isSDCardExist()) {
+			Toast.makeText(this,"SD card is not mounted!",Toast.LENGTH_SHORT).show();
 			finish();
 		}
 		mHelper = new ClientHelper();
-		imageView = (ImageView)findViewById(R.id.status_img);
-		ImageAnimation animation = new ImageAnimation(this, imageView);
+		statusImage = (ImageView) findViewById(R.id.status_img);
+		ImageAnimation animation = new ImageAnimation(this, statusImage);
 		animation.startAnimation(animation.test);
 		/*
 		 * server upload file template
@@ -62,27 +78,34 @@ public class TrafficLog extends Activity {
 		setupBroadcastReceiver();
 
 	}
+
 	@Override
-	public void onDestroy(){
-		if(receiver != null)
+	public void onDestroy() {
+		if (receiver != null)
 			unregisterReceiver(receiver);
 		super.onDestroy();
 	}
+
 	private void setupBroadcastReceiver() {
 		receiver = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				if(intent.hasExtra("isMoving") && intent.hasExtra("dataType")){
+				if (intent.hasExtra("isMoving")) {
+
+					boolean isMoving = intent
+							.getBooleanExtra("isMoving", false);
+					movingStatus = "ismoving:" + isMoving;
 					
-					boolean isMoving = intent.getBooleanExtra("isMoving", false);
-					String dataType = intent.getStringExtra("dataType");
-					Toast.makeText(getApplicationContext(),"phoneStatus: ismoving"+isMoving + " dataType:"+dataType,Toast.LENGTH_SHORT).show();
-					Log.d(TAG,"phoneStatus: ismoving"+isMoving + " dataType:"+dataType);
-					
+
 				}
-				
+				if (intent.hasExtra("dataType")) {
+					String dataType = intent.getStringExtra("dataType");
+					activityStatus = "dataType:"+ dataType;
+				}
+				statusText.setText(movingStatus + "\n" + activityStatus );
 			}
+			
 
 		};
 		IntentFilter filter = new IntentFilter();
@@ -90,7 +113,7 @@ public class TrafficLog extends Activity {
 		registerReceiver(receiver, filter);
 	}
 
-	private void setPlaceAdaper() {
+	/*private void setPlaceAdaper() {
 		ArrayAdapter<String> positionAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, trafficModeList);
 		positionAdapter
@@ -107,7 +130,7 @@ public class TrafficLog extends Activity {
 
 					}
 				});
-	}
+	}*/
 
 	private void serviceStateSetting() {
 		if (isMyServiceRunning()) {

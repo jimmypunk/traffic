@@ -59,11 +59,13 @@ public class ClientHelper {
      *  
      */ 
     public String uploadFile(String token, String filepath) throws Exception{
-
-    	HttpPost post = new HttpPost(API_HOST_SERVER + "/getUploadFile.php");
-        post.setHeader("Accept-Encoding", "gzip");
         
         File f = new File(filepath);
+        return uploadFile(token, f);
+    }
+    public String uploadFile(String token, File f) throws Exception{
+    	HttpPost post = new HttpPost(API_HOST_SERVER + "/getUploadFile.php");
+        post.setHeader("Accept-Encoding", "gzip");
         MultipartEntity mEntity = new MultipartEntity();
         ContentBody body = new FileBody(f, "text/csv");
         mEntity.addPart("file", body);
@@ -73,7 +75,6 @@ public class ClientHelper {
         String ret = parseResponseToString(response);
         return ret;
     }
-    
     private JSONObject parseResponseToJson(HttpResponse response) throws IOException, JSONException {
         String result = streamToString(getInputStream(response));
         Log.d(TAG, "Parsing: " + result);

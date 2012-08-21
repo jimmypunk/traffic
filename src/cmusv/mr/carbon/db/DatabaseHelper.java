@@ -85,8 +85,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ArrayList<Location> locations = new ArrayList<Location>(); 
 		//getLocationsCursor()
 		Cursor cursor = getLocationsCursor(trackId, startTrackPointId,	-1, false);
-		cursor.moveToFirst();
-		if(cursor!=null){
+		
+		if(cursor!=null && cursor.moveToFirst()){
 			do{
 				Location location = createLocation(cursor);
 				locations.add(location);
