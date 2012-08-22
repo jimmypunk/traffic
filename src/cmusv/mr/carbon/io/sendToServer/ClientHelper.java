@@ -46,7 +46,7 @@ public class ClientHelper {
     
     /* register for a new user */
     public JSONObject register(String username, String password) throws Exception{
-        HttpGet get = new HttpGet(API_HOST_SERVER + "/moblie/createNewUser.php?account=" + username + "&password=" + password);
+        HttpGet get = new HttpGet(API_HOST_SERVER + "/mobile/createNewUser.php?account=" + username + "&password=" + password);
         get.setHeader("Accept-Encoding", "gzip");
 
         HttpResponse response = mHttpClient.execute(get);

@@ -18,7 +18,7 @@ public class DataAnalyst {
 	private static double SPEED_LIMIT = 50;
 	private static double SPEED_CAR = 70;
 	private static double SPEED_MAX_WALK = 15;
-	
+	private static double mps2kmph = 3.6;
 	/* 
 	 *  What this analyst have ....
 	 */
@@ -33,11 +33,11 @@ public class DataAnalyst {
 
 	public DataType getAnalysisResult() {
 		if (mKnowledgeOfLocations != null) {
-			double averageSpeed = mTools.averageSpeed(mKnowledgeOfLocations);
-			double maxSpeed = mTools.maxSpeed(mKnowledgeOfLocations);
-			double averageAccuracy = mTools.averageAccuracy(mKnowledgeOfLocations);
+			double averageSpeed = mTools.averageSpeed(mKnowledgeOfLocations) * mps2kmph;
+			double maxSpeed = mTools.maxSpeed(mKnowledgeOfLocations) * mps2kmph;
+			double averageAccuracy = mTools.averageAccuracy(mKnowledgeOfLocations) * mps2kmph;
 			double averageBearingChange = mTools.averageBearingChange(mKnowledgeOfLocations);
-			double varianceSpeed = mTools.varianceSpeed(mKnowledgeOfLocations);
+			double varianceSpeed = mTools.varianceSpeed(mKnowledgeOfLocations) * mps2kmph * mps2kmph;
 			double averageAcceleration = mTools.averageAcceleration(mKnowledgeOfLocations);
 			
 			return this.analyze(averageSpeed, maxSpeed, averageAccuracy, averageBearingChange, varianceSpeed, averageAcceleration);

@@ -111,6 +111,7 @@ public class CsvTrackWriter{
 
   public void writeLocations(){
 	  assert(track!=null);
+	  if(track.getLocations()!=null)
 	  for(Location location:track.getLocations()){
 		  writeLocation(location);
 	  }

@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -15,6 +16,7 @@ import cmusv.mr.carbon.TrafficLog;
 import cmusv.mr.carbon.data.DataCollector;
 import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.utils.ShareTools;
+import cmusv.mr.carbon.utils.SharepreferenceHelper;
 
 public class SensorLogService extends Service {
 	private DataCollector dataCollector;
@@ -45,24 +47,27 @@ public class SensorLogService extends Service {
 		isRecording = true;
 		clientHelper = new ClientHelper();
 		showNotification();
-		
+
 		super.onStart(intent, startId);
 	}
 
 	private void checkFilesToBeUpload() {
 		if (!ShareTools.isInternetConnected(this))
 			return;
-		File dir = getExternalFilesDir(null);
+		File dir = getExternalCacheDir();
 		final File filelist[] = dir.listFiles();
-		if (filelist != null)
+		Log.d(TAG,"fileList" + filelist.toString());
+		if (filelist != null) 
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					for (File file : filelist) {
+						Log.d(TAG,"file" + file.getName());
+						SharedPreferences settings = getSharedPreferences("account", MODE_PRIVATE);
+						SharepreferenceHelper preferenceHelper = new SharepreferenceHelper(settings);
 
 						try {
-							clientHelper.uploadFile(
-									"d35528c14af11f08881c8b924de396e4", file);
+							clientHelper.uploadFile(preferenceHelper.getUserToken(), file);
 							Log.d("upload", file.getName() + " uploaded");
 							file.delete();
 						} catch (Exception e) {

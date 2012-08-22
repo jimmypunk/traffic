@@ -1,4 +1,6 @@
 package cmusv.mr.carbon;
+import java.io.File;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -29,7 +31,7 @@ public class TrafficLog extends Activity {
 	//private String[] trafficModeList = { "walk", "bike", "car", "light rail" };
 	private String useChoice = null;
 	private BroadcastReceiver receiver;
-	private ClientHelper mHelper;
+	private ClientHelper clientHelper;
 	private ImageView statusImage;
 	private TextView statusText;
 	public static final String ACTION = "android.intent.action.cmusv.mr.carbon.dataTransmit";
@@ -61,7 +63,7 @@ public class TrafficLog extends Activity {
 			Toast.makeText(this,"SD card is not mounted!",Toast.LENGTH_SHORT).show();
 			finish();
 		}
-		mHelper = new ClientHelper();
+		clientHelper = new ClientHelper();
 		statusImage = (ImageView) findViewById(R.id.status_img);
 		ImageAnimation animation = new ImageAnimation(this, statusImage);
 		animation.startAnimation(animation.test);
@@ -71,12 +73,42 @@ public class TrafficLog extends Activity {
 		 * Thread t = new Thread(){
 		 * 
 		 * @Override public void run(){ try{
-		 * mHelper.uploadFile("d35528c14af11f08881c8b924de396e4",
+		 * clientHelper.uploadFile("d35528c14af11f08881c8b924de396e4",
 		 * "/sdcard/MyTracks/csv/louis.csv"); } catch(Exception e){
 		 * e.printStackTrace(); } } }; t.start();
 		 */
 		setupBroadcastReceiver();
+		checkFilesToBeUpload();
 
+	}
+	private void checkFilesToBeUpload() {
+		if (!ShareTools.isInternetConnected(this))
+			return;
+		File dir = getExternalCacheDir();
+		final File filelist[] = dir.listFiles();
+		Log.d(TAG,"fileList" + filelist.toString());
+		if (filelist != null) 
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					for (File file : filelist) {
+						Log.d(TAG,"file" + file.getName());
+						SharedPreferences settings = getSharedPreferences("account", MODE_PRIVATE);
+						SharepreferenceHelper preferenceHelper = new SharepreferenceHelper(settings);
+
+						try {
+							clientHelper.uploadFile(preferenceHelper.getUserToken(), file);
+							Log.d("upload", file.getName() + " uploaded");
+							file.delete();
+						} catch (Exception e) {
+							Log.d("upload", "upload fail :(");
+							e.printStackTrace();
+						}
+
+					}
+
+				}
+			}).start();
 	}
 
 	@Override
