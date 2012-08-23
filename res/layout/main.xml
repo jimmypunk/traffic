@@ -1,24 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:orientation="vertical"
-	xmlns:android="http://schemas.android.com/apk/res/android">
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="match_parent" android:layout_height="match_parent"
-		android:layout_weight="1">
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:textSize="30px"
-			android:text="Transportation Mode Setting" android:gravity="center"></TextView>
-		<Spinner android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/position"></Spinner>
-	</LinearLayout>
-	<LinearLayout android:layout_width="match_parent"
-		android:orientation="horizontal" android:layout_height="wrap_content">
-		<Button android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:text="start" android:id="@+id/startButton"
-			android:layout_weight="1"></Button>
-		<Button android:text="stop" android:id="@+id/stopButton"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_weight="1"></Button>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    android:orientation="vertical" >
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@layout/header_gradient"
+        android:orientation="horizontal"
+        android:paddingBottom="5dip"
+        android:paddingTop="5dip" >
+
+        <!-- Logo Start -->
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dip"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:gravity="center"
+            android:text="Mr. carbon"
+            android:textColor="#372c24"
+            android:textSize="30dp" >
+        </TextView>
+        <!-- Logo Ends -->
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_weight = "1"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/bg_img"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/background_1"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:id="@+id/status_img"
+                android:layout_width="200dp"
+                android:layout_height="299dp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignTop="@+id/bg_img"
+                android:layout_alignBottom="@+id/bg_img"
+                
+                android:src="@drawable/mrc_walk" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/startButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="start" >
+        </Button>
+
+        <Button
+            android:id="@+id/stopButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="stop" >
+        </Button>
+    </LinearLayout>
+
 </LinearLayout>

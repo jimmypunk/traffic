@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import cmusv.mr.carbon.data.algorithm.DataAnalyst.DataType;
 import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.service.sensors.SensorLogService;
 import cmusv.mr.carbon.utils.ShareTools;
@@ -33,12 +34,14 @@ public class TrafficLog extends Activity {
 	private BroadcastReceiver receiver;
 	private ClientHelper clientHelper;
 	private ImageView statusImage;
+	private ImageView bgImage;
 	private TextView statusText;
 	public static final String ACTION = "android.intent.action.cmusv.mr.carbon.dataTransmit";
 	private final String TAG = TrafficLog.class.getSimpleName();
-	private String movingStatus = "moving:";
-	private String activityStatus = "dataType:";
+	private String movingStatus = "moving:false";
+	private String activityStatus = "dataType:unknown";
 	private SharepreferenceHelper preferenceHelper;
+	private ImageAnimation animation;
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -65,8 +68,9 @@ public class TrafficLog extends Activity {
 		}
 		clientHelper = new ClientHelper();
 		statusImage = (ImageView) findViewById(R.id.status_img);
-		ImageAnimation animation = new ImageAnimation(this, statusImage);
-		animation.startAnimation(animation.test);
+		bgImage = (ImageView) findViewById(R.id.bg_img);
+		animation = new ImageAnimation(this, bgImage);
+		animation.setAnimation(animation.bg, 1000);
 		/*
 		 * server upload file template
 		 * 
@@ -128,12 +132,36 @@ public class TrafficLog extends Activity {
 					boolean isMoving = intent
 							.getBooleanExtra("isMoving", false);
 					movingStatus = "ismoving:" + isMoving;
-					
+					if(isMoving){
+						animation.startAnimation();
+					}else{
+						animation.stopAnimation();
+					}
 
 				}
 				if (intent.hasExtra("dataType")) {
-					String dataType = intent.getStringExtra("dataType");
-					activityStatus = "dataType:"+ dataType;
+					DataType dataType = (DataType) intent.getSerializableExtra("dataType");
+					
+					activityStatus = "dataType:"+ dataType.toString();
+					switch(dataType){
+						case WALKING:
+							statusImage.setImageResource(R.drawable.mrc_walk);
+							break;
+						case BIKING:
+							statusImage.setImageResource(R.drawable.mrc_bicycle);
+							break;
+						case TRAIN:
+							statusImage.setImageResource(R.drawable.mrc_train);
+							break;
+						case DRIVING:
+							statusImage.setImageResource(R.drawable.mrc_car);
+							break;
+						case ERROR:
+							// it should not happened...
+							Log.e(TAG,"error, wrong dataType");
+							break;
+					}
+					
 				}
 				statusText.setText(movingStatus + "\n" + activityStatus );
 			}

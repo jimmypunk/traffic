@@ -29,7 +29,7 @@ public class SensorLogService extends Service {
 
 	private boolean isRecording = false;
 	private NotificationManager mNotificationManager;
-	private ClientHelper clientHelper;
+	
 
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -41,45 +41,17 @@ public class SensorLogService extends Service {
 		 * String logDateTimeString = new SimpleDateFormat("yyyyMMdd_HHmmss")
 		 * .format(new Date());
 		 */
-		checkFilesToBeUpload();
+		
 		Log.d(TAG, "onStart");
 		dataCollector.startRecording();
 		isRecording = true;
-		clientHelper = new ClientHelper();
+		
 		showNotification();
 
 		super.onStart(intent, startId);
 	}
 
-	private void checkFilesToBeUpload() {
-		if (!ShareTools.isInternetConnected(this))
-			return;
-		File dir = getExternalCacheDir();
-		final File filelist[] = dir.listFiles();
-		Log.d(TAG,"fileList" + filelist.toString());
-		if (filelist != null) 
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					for (File file : filelist) {
-						Log.d(TAG,"file" + file.getName());
-						SharedPreferences settings = getSharedPreferences("account", MODE_PRIVATE);
-						SharepreferenceHelper preferenceHelper = new SharepreferenceHelper(settings);
 
-						try {
-							clientHelper.uploadFile(preferenceHelper.getUserToken(), file);
-							Log.d("upload", file.getName() + " uploaded");
-							file.delete();
-						} catch (Exception e) {
-							Log.d("upload", "upload fail :(");
-							e.printStackTrace();
-						}
-
-					}
-
-				}
-			}).start();
-	}
 
 	@Override
 	public void onDestroy() {

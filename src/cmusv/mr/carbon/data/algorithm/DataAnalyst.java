@@ -9,7 +9,7 @@ public class DataAnalyst {
 	 *  Define all the transportation Mode in Integer
 	 */
 
-	public enum DataType{
+	public static enum DataType{
 		ERROR, WALKING, BIKING, TRAIN, DRIVING
 	};
 	/*

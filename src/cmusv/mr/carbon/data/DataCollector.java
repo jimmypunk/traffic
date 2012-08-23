@@ -183,8 +183,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			intent.setAction(TrafficLog.ACTION);
 			dataWindow.addDataToWindow(locationToInsert);
 			dataAnalyst.setAnotherTripData(dataWindow.getCurrentWindow(time));
-			intent.putExtra("dataType", dataAnalyst.getAnalysisResult()
-					.toString());
+			intent.putExtra("dataType", dataAnalyst.getAnalysisResult());
 			mContext.sendBroadcast(intent);
 		}
 	}
@@ -241,10 +240,13 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			if (lastRecordedLocation != null) {
 				distanceToLastRecorded = location
 						.distanceTo(lastRecordedLocation);
+				
 			}
 			double distanceToLast = Double.POSITIVE_INFINITY;
 			if (lastLocation != null) {
 				distanceToLast = location.distanceTo(lastLocation);
+				
+				
 			}
 			/*
 			 * boolean hasSensorData = sensorManager != null &&
@@ -480,13 +482,20 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			previousEventValue = event.values.clone();
 			mDeltaAccelerometer = lowpassFilter(newDeltaAccelerometer,
 					mDeltaAccelerometer, 0.6f);
-			updateIsMovingMessage(mDeltaAccelerometer);
+			updateIsMovingMessage( isMoving(mDeltaAccelerometer));
+			
 		}
 
 	}
 
 	private boolean isMoving(Location prevLocation, Location currLocation) {
-		if (prevLocation.distanceTo(currLocation) >= 1)
+		double timeInterval = (currLocation.getTime() - prevLocation.getTime())*NS2S;
+		Log.d(TAG,"timeInterval:"+timeInterval);
+		double distance = prevLocation.distanceTo(currLocation);
+		double speed = distance/ timeInterval;
+		Log.d(TAG,"distanceToLast:"+distance + " moving speed:"+ speed);
+		Toast.makeText(mContext,"distanceToLast:"+distance + " moving speed:"+ speed, Toast.LENGTH_SHORT).show();
+		if (speed <=  1)
 			return false;
 		return true;
 	}
@@ -503,12 +512,13 @@ public class DataCollector implements LocationListener, SensorEventListener {
 
 	}
 
-	public void updateIsMovingMessage(float deltaAccelerometer) {
+	public void updateIsMovingMessage(boolean isMoving) {
 		Intent intent = new Intent();
 		intent.setAction(TrafficLog.ACTION);
-		intent.putExtra("isMoving", isMoving(deltaAccelerometer));
+		intent.putExtra("isMoving", isMoving);
 		mContext.sendBroadcast(intent);
 	}
+
 
 	private float lowpassFilter(float newValue, float oldValue, float alpha) {
 		return alpha * newValue + (1 - alpha) * oldValue;
