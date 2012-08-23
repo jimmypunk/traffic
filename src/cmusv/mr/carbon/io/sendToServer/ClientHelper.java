@@ -78,12 +78,12 @@ public class ClientHelper {
      *         need to use token
      *  
      */ 
-    public String uploadFile(String token, String filepath) throws Exception{
+    public JSONObject uploadFile(String token, String filepath) throws Exception{
         
         File f = new File(filepath);
         return uploadFile(token, f);
     }
-    public String uploadFile(String token, File f) throws Exception{
+    public JSONObject uploadFile(String token, File f) throws Exception{
     	HttpPost post = new HttpPost(API_HOST_SERVER + "/getUploadFile.php");
         post.setHeader("Accept-Encoding", "gzip");
         MultipartEntity mEntity = new MultipartEntity();
@@ -92,7 +92,7 @@ public class ClientHelper {
         mEntity.addPart("token", new StringBody(token));
         post.setEntity(mEntity);
         HttpResponse response = mHttpClient.execute(post);
-        String ret = parseResponseToString(response);
+        JSONObject ret = parseResponseToJson(response);
         return ret;
     }
     private JSONObject parseResponseToJson(HttpResponse response) throws IOException, JSONException {
