@@ -23,6 +23,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cmusv.mr.carbon.utils.StringUtils;
+
 import android.util.Log;
 
 public class ClientHelper {
@@ -55,7 +57,7 @@ public class ClientHelper {
         return json;
     }
     
-    public String sendCurrentTripToServer(String token, String type, String trip_id, double aver_speed, double max_speed, double total_distance, double total_time, Date time_start, Date time_end ) throws Exception{
+    public String sendCurrentTripToServer(String token, String type, String trip_id, double aver_speed, double max_speed, double total_distance, double total_time, long time_start, long time_end ) throws Exception{
     	HttpPost post = new HttpPost(API_HOST_SERVER + "/mobile/getUploadActivity.php");
     	post.setHeader("Accept-Encoding", "gzip");
     	MultipartEntity mEntity = new MultipartEntity();
@@ -66,8 +68,8 @@ public class ClientHelper {
     	mEntity.addPart("max_speed", new StringBody(Double.toString(max_speed)));
     	mEntity.addPart("total_distance", new StringBody(Double.toString(total_distance)));
     	mEntity.addPart("total_time", new StringBody(Double.toString(total_time)));
-    	mEntity.addPart("start_time", new StringBody(time_start.toString()));
-    	mEntity.addPart("end_time", new StringBody(time_end.toString()));
+    	mEntity.addPart("start_time", new StringBody(StringUtils.formatDateTimeIso8601(time_start)));
+    	mEntity.addPart("end_time", new StringBody(StringUtils.formatDateTimeIso8601(time_end)));
     	post.setEntity(mEntity);
     	HttpResponse response = mHttpClient.execute(post);
     	String ret = parseResponseToString(response);

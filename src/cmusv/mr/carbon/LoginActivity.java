@@ -41,7 +41,7 @@ public class LoginActivity extends Activity {
 				final EditText username = (EditText) findViewById(R.id.username);
 				EditText password = (EditText) findViewById(R.id.password);
 				final String usernameStr = username.getText().toString();
-				final String passwordStr = username.getText().toString();
+				final String passwordStr = password.getText().toString();
 				
 				Toast.makeText(getApplicationContext(), "Login...",	Toast.LENGTH_SHORT).show();
 				

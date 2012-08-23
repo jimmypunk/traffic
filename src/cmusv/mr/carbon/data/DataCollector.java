@@ -5,10 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Locale;
+
+import org.json.JSONObject;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -23,10 +28,13 @@ import android.util.Log;
 import android.widget.Toast;
 import cmusv.mr.carbon.TrafficLog;
 import cmusv.mr.carbon.data.algorithm.DataAnalyst;
+import cmusv.mr.carbon.data.algorithm.DataAnalyst.DataType;
 import cmusv.mr.carbon.data.stats.TripStatistics;
 import cmusv.mr.carbon.db.DatabaseHelper;
 import cmusv.mr.carbon.io.file.CsvTrackWriter;
+import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.utils.LocationUtils;
+import cmusv.mr.carbon.utils.SharepreferenceHelper;
 
 public class DataCollector implements LocationListener, SensorEventListener {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -52,6 +60,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	private boolean isMoving;
 	private Location lastValidLocation;
 	private Track recordingTrack;
+	private DataType trackDataType = DataType.ERROR;
 	private float deltaAccelerometerReading(float[] oldReading,
 			float[] newReading) {
 		float delta = 0;
@@ -75,15 +84,14 @@ public class DataCollector implements LocationListener, SensorEventListener {
 
 		dbHelper = new DatabaseHelper(context);
 		dataAnalyst = new DataAnalyst(null);
-		
+
 		mContext = context;
 	}
 
 	public void startNewTrack() {
 		long startTime = System.currentTimeMillis();
 		Track track = new Track();
-		TripStatistics trackStats = track
-				.getTripStatistics();
+		TripStatistics trackStats = track.getTripStatistics();
 		trackStats.setStartTime(startTime);
 		recordingTrackId = dbHelper.insertTrack(track);
 		length = 0;
@@ -113,17 +121,51 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			tripStatistics.setTotalTime(tripStatistics.getStopTime()
 					- tripStatistics.getStartTime());
 			tripStatistics.setTotalDistance(length);
-			Log.d(TAG,tripStatistics.toString());
-			//length
+			Log.d(TAG, tripStatistics.toString());
+			// length
 			dbHelper.updateTrack(recordedTrack);
+			final File file = writeTrack2File(recordedTrack);
+			UploadThread t = new UploadThread();
+			t.setTripStatistics(tripStatistics);
+			t.setFile(file);
+			t.start();
 		}
 
-		writeTrack2File(recordedTrack);
 
 		recordingTrackId = -1L;
 
 	}
+	class UploadThread extends Thread{
+		private TripStatistics tripStatistics = null;
+		private File file = null;
+		public void setTripStatistics(TripStatistics tripStatistics){
+			this.tripStatistics = tripStatistics;
+		}
+		public void setFile(File file){
+			this.file = file;
+		}
+		@Override
+		public void run() {
+			try {
+				SharedPreferences settings = mContext.getSharedPreferences(
+						"account", Context.MODE_PRIVATE);
+				SharepreferenceHelper preferenceHelper = new SharepreferenceHelper(
+						settings);
 
+				ClientHelper clientHelper = new ClientHelper();
+				JSONObject ret = clientHelper.uploadFile(preferenceHelper.getUserToken(), file);
+				assert(ret.has("trip_id"));
+				String tripId = ret.getString("trip_id");
+				Log.d(TAG,"trip_id:"+ tripId);
+				Log.d(TAG,"max:"+ tripStatistics.getMaxSpeed());
+				
+				clientHelper.sendCurrentTripToServer(preferenceHelper.getUserToken(),trackDataType.toString(),tripId, tripStatistics.getAverageSpeed(),tripStatistics.getMaxSpeed(),tripStatistics.getTotalDistance(),tripStatistics.getTotalTime(), tripStatistics.getStartTime(), tripStatistics.getStopTime());
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	public File writeTrack2File(Track track) {
 		CsvTrackWriter writer = new CsvTrackWriter(mContext);
 		File file = new File(mContext.getExternalCacheDir(),
@@ -186,7 +228,8 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			intent.setAction(TrafficLog.ACTION);
 			dataWindow.addDataToWindow(locationToInsert);
 			dataAnalyst.setAnotherTripData(dataWindow.getCurrentWindow(time));
-			intent.putExtra("dataType", dataAnalyst.getAnalysisResult());
+			trackDataType = dataAnalyst.getAnalysisResult();
+			intent.putExtra("dataType", trackDataType);
 			mContext.sendBroadcast(intent);
 		}
 	}
@@ -243,13 +286,12 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			if (lastRecordedLocation != null) {
 				distanceToLastRecorded = location
 						.distanceTo(lastRecordedLocation);
-				
+
 			}
 			double distanceToLast = Double.POSITIVE_INFINITY;
 			if (lastLocation != null) {
 				distanceToLast = location.distanceTo(lastLocation);
-				
-				
+
 			}
 			/*
 			 * boolean hasSensorData = sensorManager != null &&
@@ -485,20 +527,23 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			previousEventValue = event.values.clone();
 			mDeltaAccelerometer = lowpassFilter(newDeltaAccelerometer,
 					mDeltaAccelerometer, 0.6f);
-			updateIsMovingMessage( isMoving(mDeltaAccelerometer));
-			
+			updateIsMovingMessage(isMoving(mDeltaAccelerometer));
+
 		}
 
 	}
 
 	private boolean isMoving(Location prevLocation, Location currLocation) {
-		double timeInterval = (currLocation.getTime() - prevLocation.getTime())*NS2S;
-		Log.d(TAG,"timeInterval:"+timeInterval);
+		double timeInterval = (currLocation.getTime() - prevLocation.getTime())
+				* NS2S;
+		Log.d(TAG, "timeInterval:" + timeInterval);
 		double distance = prevLocation.distanceTo(currLocation);
-		double speed = distance/ timeInterval;
-		Log.d(TAG,"distanceToLast:"+distance + " moving speed:"+ speed);
-		Toast.makeText(mContext,"distanceToLast:"+distance + " moving speed:"+ speed, Toast.LENGTH_SHORT).show();
-		if (speed <=  1)
+		double speed = distance / timeInterval;
+		Log.d(TAG, "distanceToLast:" + distance + " moving speed:" + speed);
+		Toast.makeText(mContext,
+				"distanceToLast:" + distance + " moving speed:" + speed,
+				Toast.LENGTH_SHORT).show();
+		if (speed <= 1)
 			return false;
 		return true;
 	}
@@ -521,7 +566,6 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		intent.putExtra("isMoving", isMoving);
 		mContext.sendBroadcast(intent);
 	}
-
 
 	private float lowpassFilter(float newValue, float oldValue, float alpha) {
 		return alpha * newValue + (1 - alpha) * oldValue;

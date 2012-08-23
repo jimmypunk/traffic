@@ -32,7 +32,6 @@ public class TrafficLog extends Activity {
 	//private String[] trafficModeList = { "walk", "bike", "car", "light rail" };
 	private String useChoice = null;
 	private BroadcastReceiver receiver;
-	private ClientHelper clientHelper;
 	private ImageView statusImage;
 	private ImageView bgImage;
 	private TextView statusText;
@@ -66,7 +65,7 @@ public class TrafficLog extends Activity {
 			Toast.makeText(this,"SD card is not mounted!",Toast.LENGTH_SHORT).show();
 			finish();
 		}
-		clientHelper = new ClientHelper();
+		
 		statusImage = (ImageView) findViewById(R.id.status_img);
 		bgImage = (ImageView) findViewById(R.id.bg_img);
 		animation = new ImageAnimation(this, bgImage);
@@ -82,37 +81,8 @@ public class TrafficLog extends Activity {
 		 * e.printStackTrace(); } } }; t.start();
 		 */
 		setupBroadcastReceiver();
-		checkFilesToBeUpload();
+		ShareTools.checkFilesToBeUpload(this);
 
-	}
-	private void checkFilesToBeUpload() {
-		if (!ShareTools.isInternetConnected(this))
-			return;
-		File dir = getExternalCacheDir();
-		final File filelist[] = dir.listFiles();
-		Log.d(TAG,"fileList" + filelist.toString());
-		if (filelist != null) 
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					for (File file : filelist) {
-						Log.d(TAG,"file" + file.getName());
-						SharedPreferences settings = getSharedPreferences("account", MODE_PRIVATE);
-						SharepreferenceHelper preferenceHelper = new SharepreferenceHelper(settings);
-
-						try {
-							clientHelper.uploadFile(preferenceHelper.getUserToken(), file);
-							Log.d("upload", file.getName() + " uploaded");
-							file.delete();
-						} catch (Exception e) {
-							Log.d("upload", "upload fail :(");
-							e.printStackTrace();
-						}
-
-					}
-
-				}
-			}).start();
 	}
 
 	@Override

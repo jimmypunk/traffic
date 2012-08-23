@@ -33,8 +33,10 @@ public class FileUploadService extends Service{
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			if (!ShareTools.isInternetConnected(getApplicationContext()))
+			if (!ShareTools.isInternetConnected(getApplicationContext())){
 				handler.postDelayed(checkFilesToBeUpload, 10000);
+				return;
+			}
 			File dir = getExternalCacheDir();
 			final File filelist[] = dir.listFiles();
 			if (filelist != null){
