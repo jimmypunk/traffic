@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -31,7 +32,7 @@ public class ClientHelper {
     private String mPassword;
     
     private String TAG ="cool";
-    private String API_HOST_SERVER = "http://209.129.244.24/louis/GumballServer/php";
+    private String API_HOST_SERVER = "http://sweetfeedback.csie.org/louis/GumballServer/php";
     
     public ClientHelper(){
         mHttpClient = new DefaultHttpClient();
@@ -52,6 +53,25 @@ public class ClientHelper {
         HttpResponse response = mHttpClient.execute(get);
         JSONObject json = parseResponseToJson(response);
         return json;
+    }
+    
+    public String sendCurrentTripToServer(String token, String type, String trip_id, double aver_speed, double max_speed, double total_distance, double total_time, Date time_start, Date time_end ) throws Exception{
+    	HttpPost post = new HttpPost(API_HOST_SERVER + "/mobile/getUploadActivity.php");
+    	post.setHeader("Accept-Encoding", "gzip");
+    	MultipartEntity mEntity = new MultipartEntity();
+    	mEntity.addPart("token", new StringBody(token));
+    	mEntity.addPart("trip_id", new StringBody(trip_id));
+    	mEntity.addPart("type", new StringBody(type));
+    	mEntity.addPart("average_speed", new StringBody(Double.toString(aver_speed)));
+    	mEntity.addPart("max_speed", new StringBody(Double.toString(max_speed)));
+    	mEntity.addPart("total_distance", new StringBody(Double.toString(total_distance)));
+    	mEntity.addPart("total_time", new StringBody(Double.toString(total_time)));
+    	mEntity.addPart("start_time", new StringBody(time_start.toString()));
+    	mEntity.addPart("end_time", new StringBody(time_end.toString()));
+    	post.setEntity(mEntity);
+    	HttpResponse response = mHttpClient.execute(post);
+    	String ret = parseResponseToString(response);
+    	return ret;
     }
     
     /* use for upload something to server 
