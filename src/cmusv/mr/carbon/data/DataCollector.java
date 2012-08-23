@@ -82,7 +82,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	public void startNewTrack() {
 		long startTime = System.currentTimeMillis();
 		Track track = new Track();
-		cmusv.mr.carbon.data.stats.TripStatistics trackStats = track
+		TripStatistics trackStats = track
 				.getTripStatistics();
 		trackStats.setStartTime(startTime);
 		recordingTrackId = dbHelper.insertTrack(track);
@@ -112,6 +112,9 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			tripStatistics.setStopTime(System.currentTimeMillis());
 			tripStatistics.setTotalTime(tripStatistics.getStopTime()
 					- tripStatistics.getStartTime());
+			tripStatistics.setTotalDistance(length);
+			Log.d(TAG,tripStatistics.toString());
+			//length
 			dbHelper.updateTrack(recordedTrack);
 		}
 
