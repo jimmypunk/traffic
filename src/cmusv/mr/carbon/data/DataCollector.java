@@ -42,7 +42,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	private SensorManager mSensorManager;
 	private Vibrator mVibrator;
 	private double length;
-	private int minRecordingDistance = 5; // 5m
+	private int minRecordingDistance = 1; // 5m
 	private int maxRecordingDistance = 200; // 200m
 	private int minRequiredAccuracy = 100;
 	private int sensorTypes[] = new int[] { Sensor.TYPE_ACCELEROMETER };
@@ -61,6 +61,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	private Location lastValidLocation;
 	private Track recordingTrack;
 	private DataType trackDataType = DataType.ERROR;
+
 	private float deltaAccelerometerReading(float[] oldReading,
 			float[] newReading) {
 		float delta = 0;
@@ -131,19 +132,22 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			t.start();
 		}
 
-
 		recordingTrackId = -1L;
 
 	}
-	class UploadThread extends Thread{
+
+	class UploadThread extends Thread {
 		private TripStatistics tripStatistics = null;
 		private File file = null;
-		public void setTripStatistics(TripStatistics tripStatistics){
+
+		public void setTripStatistics(TripStatistics tripStatistics) {
 			this.tripStatistics = tripStatistics;
 		}
-		public void setFile(File file){
+
+		public void setFile(File file) {
 			this.file = file;
 		}
+
 		@Override
 		public void run() {
 			try {
@@ -153,19 +157,29 @@ public class DataCollector implements LocationListener, SensorEventListener {
 						settings);
 
 				ClientHelper clientHelper = new ClientHelper();
-				JSONObject ret = clientHelper.uploadFile(preferenceHelper.getUserToken(), file);
-				assert(ret.has("trip_id"));
+				JSONObject ret = clientHelper.uploadFile(
+						preferenceHelper.getUserToken(), file);
+				assert (ret.has("trip_id"));
 				String tripId = ret.getString("trip_id");
-				Log.d(TAG,"trip_id:"+ tripId);
-				Log.d(TAG,"max:"+ tripStatistics.getMaxSpeed());
-				
-				clientHelper.sendCurrentTripToServer(preferenceHelper.getUserToken(),trackDataType.toString(),tripId, tripStatistics.getAverageSpeed(),tripStatistics.getMaxSpeed(),tripStatistics.getTotalDistance(),tripStatistics.getTotalTime(), tripStatistics.getStartTime(), tripStatistics.getStopTime());
-				
+				Log.d(TAG, "trip_id:" + tripId);
+				Log.d(TAG, "max:" + tripStatistics.getMaxSpeed());
+
+				clientHelper.sendCurrentTripToServer(
+						preferenceHelper.getUserToken(),
+						trackDataType.toString(), tripId,
+						tripStatistics.getAverageSpeed(),
+						tripStatistics.getMaxSpeed(),
+						tripStatistics.getTotalDistance(),
+						tripStatistics.getTotalTime(),
+						tripStatistics.getStartTime(),
+						tripStatistics.getStopTime());
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
+
 	public File writeTrack2File(Track track) {
 		CsvTrackWriter writer = new CsvTrackWriter(mContext);
 		File file = new File(mContext.getExternalCacheDir(),
@@ -220,14 +234,27 @@ public class DataCollector implements LocationListener, SensorEventListener {
 
 	}
 
+	public void updateActivityLevelMessage(long currentTime) {
+		if (isRecording) {
+			Intent intent = new Intent();
+			intent.setAction(TrafficLog.ACTION);
+			float activityLevel = dataWindow.getCurrentActivityLevel(currentTime);
+			// dataAnalyst.setAnotherAccelerData(dataWindow.getCurrentAccelerWindow(time));
+			Log.d("ActivityLevel", "ActivityLevel:" + activityLevel);
+			intent.putExtra("activityLevel", activityLevel);
+			mContext.sendBroadcast(intent);
+		}
+	}
+
 	public void updateDataTypeMessage(Location locationToInsert) {
 		if (isRecording) {
 
 			long time = locationToInsert.getTime();
 			Intent intent = new Intent();
 			intent.setAction(TrafficLog.ACTION);
-			dataWindow.addDataToWindow(locationToInsert);
-			dataAnalyst.setAnotherTripData(dataWindow.getCurrentWindow(time));
+			dataWindow.addLocationToWindow(locationToInsert);
+			dataAnalyst.setAnotherTripData(dataWindow
+					.getCurrentLocationWindow(time));
 			trackDataType = dataAnalyst.getAnalysisResult();
 			intent.putExtra("dataType", trackDataType);
 			mContext.sendBroadcast(intent);
@@ -303,7 +330,8 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			// two and ignore the rest. This code will only have an effect if
 			// the
 			// maxRecordingDistance = 0
-			if (distanceToLast == 0 /* && !hasSensorData */) {
+			boolean hasSensorData = isMoving(mDeltaAccelerometer);
+			if (distanceToLast == 0 && !hasSensorData) {
 				if (isMoving) {
 					Log.d(TAG, "Found two identical locations.");
 					isMoving = false;
@@ -323,7 +351,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 							"Not recording. More than two identical locations.");
 				}
 			} else if (distanceToLastRecorded > minRecordingDistance
-			/* || hasSensorData */) {
+					|| hasSensorData) {
 				if (lastLocation != null && !isMoving) {
 					// Last location was the last stationary location. Need to
 					// go back and
@@ -415,7 +443,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			Log.d(TAG, "rowId:" + pointId + " location:" + locationToInsert);
 
 			updateDataTypeMessage(locationToInsert);
-
+			updateActivityLevelMessage(locationToInsert.getTime());
 			// Update the current track:
 			if (lastRecordedLocation != null
 					&& lastRecordedLocation.getLatitude() < 90) {
@@ -432,7 +460,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 						.getNumberOfPoints() + 1);
 				// recordingTrack.setTripStatistics(tripStatistics);
 				dbHelper.updateTrack(recordingTrack);
-				// updateCurrentWaypoint();
+				// updateCurbentWaypoint();
 			}
 		} catch (SQLiteException e) {
 			// Insert failed, most likely because of SqlLite error code 5
@@ -521,6 +549,10 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		// TODO Auto-generated method stub
 		Log.d("SensorEventListener", "onSensorChanged called");
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+			if (!isRecording) {
+				return;
+			}
+
 			Log.d("onSensorChanged", Arrays.toString(event.values));
 			float newDeltaAccelerometer = deltaAccelerometerReading(
 					previousEventValue, event.values);
@@ -528,6 +560,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			mDeltaAccelerometer = lowpassFilter(newDeltaAccelerometer,
 					mDeltaAccelerometer, 0.6f);
 			updateIsMovingMessage(isMoving(mDeltaAccelerometer));
+			dataWindow.addAccelerToWindow(event.values, new Date().getTime());
 
 		}
 

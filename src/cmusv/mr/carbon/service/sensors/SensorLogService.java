@@ -7,16 +7,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import cmusv.mr.carbon.R;
 import cmusv.mr.carbon.TrafficLog;
 import cmusv.mr.carbon.data.DataCollector;
-import cmusv.mr.carbon.io.sendToServer.ClientHelper;
-import cmusv.mr.carbon.utils.ShareTools;
-import cmusv.mr.carbon.utils.SharepreferenceHelper;
+
 
 public class SensorLogService extends Service {
 	private DataCollector dataCollector;

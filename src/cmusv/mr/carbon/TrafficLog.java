@@ -1,4 +1,5 @@
 package cmusv.mr.carbon;
+
 import java.io.File;
 
 import android.app.Activity;
@@ -10,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,8 +31,9 @@ import cmusv.mr.carbon.utils.SharepreferenceHelper;
 public class TrafficLog extends Activity {
 	private Button startButton;
 	private Button stopButton;
-	//private Spinner trafficSpinner;
-	//private String[] trafficModeList = { "walk", "bike", "car", "light rail" };
+	// private Spinner trafficSpinner;
+	// private String[] trafficModeList = { "walk", "bike", "car", "light rail"
+	// };
 	private String useChoice = null;
 	private BroadcastReceiver receiver;
 	private ImageView statusImage;
@@ -39,33 +43,38 @@ public class TrafficLog extends Activity {
 	private final String TAG = TrafficLog.class.getSimpleName();
 	private String movingStatus = "moving:false";
 	private String activityStatus = "dataType:unknown";
+	private String activityLevelStatus = "activityLevel:-2"; 
 	private SharepreferenceHelper preferenceHelper;
 	private ImageAnimation animation;
+	private WakeLock wakeLock;
+
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		
+
 		setContentView(R.layout.main);
-		SharedPreferences settings = getSharedPreferences("account", MODE_PRIVATE);
+		SharedPreferences settings = getSharedPreferences("account",
+				MODE_PRIVATE);
 		preferenceHelper = new SharepreferenceHelper(settings);
 		String account = preferenceHelper.getUserAccount();
-		if(account == null){
+		if (account == null) {
 			Intent i = new Intent(getApplicationContext(), LoginActivity.class);
 			startActivity(i);
 		}
-		//trafficSpinner = (Spinner) findViewById(R.id.position);
+		// trafficSpinner = (Spinner) findViewById(R.id.position);
 		startButton = (Button) findViewById(R.id.startButton);
 		stopButton = (Button) findViewById(R.id.stopButton);
 		startButton.setOnClickListener(startClickListener);
 		stopButton.setOnClickListener(stopClickListener);
 		statusText = (TextView) findViewById(R.id.status_text);
-		//setPlaceAdaper();
+		// setPlaceAdaper();
 		serviceStateSetting();
 		if (!ShareTools.isSDCardExist()) {
-			Toast.makeText(this,"SD card is not mounted!",Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "SD card is not mounted!", Toast.LENGTH_SHORT)
+					.show();
 			finish();
 		}
-		
+
 		statusImage = (ImageView) findViewById(R.id.status_img);
 		bgImage = (ImageView) findViewById(R.id.bg_img);
 		animation = new ImageAnimation(this, bgImage);
@@ -85,11 +94,41 @@ public class TrafficLog extends Activity {
 
 	}
 
+	public void onResume() {
+		acquireWakeLock();
+		super.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		releaseWakeLock();
+		super.onPause();
+	}
+
 	@Override
 	public void onDestroy() {
 		if (receiver != null)
 			unregisterReceiver(receiver);
 		super.onDestroy();
+	}
+
+	private void acquireWakeLock() {
+		if (wakeLock == null) {
+
+			PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+			wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, this
+					.getClass().getCanonicalName());
+			wakeLock.acquire();
+		}
+
+	}
+
+	private void releaseWakeLock() {
+		if (wakeLock != null && wakeLock.isHeld()) {
+			wakeLock.release();
+			wakeLock = null;
+		}
+
 	}
 
 	private void setupBroadcastReceiver() {
@@ -102,40 +141,50 @@ public class TrafficLog extends Activity {
 					boolean isMoving = intent
 							.getBooleanExtra("isMoving", false);
 					movingStatus = "ismoving:" + isMoving;
-					if(isMoving){
+					if (isMoving) {
 						animation.startAnimation();
-					}else{
+					} else {
 						animation.stopAnimation();
 					}
 
 				}
 				if (intent.hasExtra("dataType")) {
-					DataType dataType = (DataType) intent.getSerializableExtra("dataType");
-					
-					activityStatus = "dataType:"+ dataType.toString();
-					switch(dataType){
-						case WALKING:
-							statusImage.setImageResource(R.drawable.mrc_walk);
-							break;
-						case BIKING:
-							statusImage.setImageResource(R.drawable.mrc_bicycle);
-							break;
-						case TRAIN:
-							statusImage.setImageResource(R.drawable.mrc_train);
-							break;
-						case DRIVING:
-							statusImage.setImageResource(R.drawable.mrc_car);
-							break;
-						case ERROR:
-							// it should not happened...
-							Log.e(TAG,"error, wrong dataType");
-							break;
+					DataType dataType = (DataType) intent
+							.getSerializableExtra("dataType");
+
+					activityStatus = "dataType:" + dataType.toString();
+					switch (dataType) {
+					case WALKING:
+						statusImage.setImageResource(R.drawable.mrc_walk);
+						break;
+					case BIKING:
+						statusImage.setImageResource(R.drawable.mrc_bicycle);
+						break;
+					case TRAIN:
+						statusImage.setImageResource(R.drawable.mrc_train);
+						break;
+					case DRIVING:
+						statusImage.setImageResource(R.drawable.mrc_car);
+						break;
+					case ERROR:
+						// it should not happened...
+						Log.e(TAG, "error, wrong dataType");
+						break;
+					}
+
+				}
+				if (intent.hasExtra("activityLevel")) {
+					float activityLevel = intent.getFloatExtra("activityLevel",-1);
+					if(activityLevel<0){
+						activityLevelStatus = "activityLevel:"+"missing data";
+					}else{
+						activityLevelStatus = "activityLevel:"+activityLevel;	
 					}
 					
 				}
-				statusText.setText(movingStatus + "\n" + activityStatus );
+
+				statusText.setText(movingStatus + "\n" + activityStatus + "\n" + activityLevelStatus);
 			}
-			
 
 		};
 		IntentFilter filter = new IntentFilter();
@@ -143,24 +192,20 @@ public class TrafficLog extends Activity {
 		registerReceiver(receiver, filter);
 	}
 
-	/*private void setPlaceAdaper() {
-		ArrayAdapter<String> positionAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, trafficModeList);
-		positionAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		trafficSpinner.setAdapter(positionAdapter);
-		trafficSpinner
-				.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-					public void onItemSelected(AdapterView adapterView,
-							View view, int position, long id) {
-						useChoice = trafficModeList[position];
-					}
-
-					public void onNothingSelected(AdapterView adapterView) {
-
-					}
-				});
-	}*/
+	/*
+	 * private void setPlaceAdaper() { ArrayAdapter<String> positionAdapter =
+	 * new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
+	 * trafficModeList); positionAdapter
+	 * .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	 * trafficSpinner.setAdapter(positionAdapter); trafficSpinner
+	 * .setOnItemSelectedListener(new Spinner.OnItemSelectedListener() { public
+	 * void onItemSelected(AdapterView adapterView, View view, int position,
+	 * long id) { useChoice = trafficModeList[position]; }
+	 * 
+	 * public void onNothingSelected(AdapterView adapterView) {
+	 * 
+	 * } }); }
+	 */
 
 	private void serviceStateSetting() {
 		if (isMyServiceRunning()) {

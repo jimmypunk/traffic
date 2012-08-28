@@ -2,6 +2,7 @@ package cmusv.mr.carbon.data.algorithm;
 
 import java.util.ArrayList;
 
+import cmusv.mr.carbon.data.AccelerData;
 import android.location.Location;
 
 public class DataAnalyst {
@@ -24,6 +25,7 @@ public class DataAnalyst {
 	 */
 	private DataAnalystTool mTools = null;
 	private ArrayList<Location> mKnowledgeOfLocations = null;
+	private ArrayList<AccelerData> mKnowledgeOfAccelerations = null;
 	
 
 	public DataAnalyst(ArrayList<Location> data) {
@@ -74,6 +76,11 @@ public class DataAnalyst {
 		}
 		//return ERROR;
 	}
+
+	public void setAnotherAccelerData(ArrayList <AccelerData> accelerWindowData) {
+		mKnowledgeOfAccelerations = accelerWindowData;
+	}
+	
 
 	
 }
