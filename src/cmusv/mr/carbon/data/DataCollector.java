@@ -132,6 +132,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			final File file = writeTrack2File(recordedTrack);
 			UploadThread t = new UploadThread();
 			t.setTripStatistics(tripStatistics);
+			t.setDataTypeCnt(walkingCnt, bikingCnt, drivingCnt, trainCnt);
 			t.setFile(file);
 			t.start();
 		}
@@ -273,7 +274,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			dataWindow.addLocationToWindow(locationToInsert);
 			dataAnalyst.setAnotherTripData(dataWindow
 					.getCurrentLocationWindow(time));
-			DataType trackDataType = dataAnalyst.getAnalysisResult();
+			trackDataType = dataAnalyst.getAnalysisResult();
 			updateDataTypeSummary(trackDataType);
 			intent.putExtra("dataType", trackDataType);
 			mContext.sendBroadcast(intent);

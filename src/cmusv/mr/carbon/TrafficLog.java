@@ -43,7 +43,7 @@ public class TrafficLog extends Activity {
 	private final String TAG = TrafficLog.class.getSimpleName();
 	private String movingStatus = "moving:false";
 	private String activityStatus = "dataType:unknown";
-	private String activityLevelStatus = "activityLevel:-2"; 
+	private String activityLevelStatus = "activityLevel:0"; 
 	private SharepreferenceHelper preferenceHelper;
 	private ImageAnimation animation;
 	private WakeLock wakeLock;
@@ -247,6 +247,9 @@ public class TrafficLog extends Activity {
 
 			Intent intent = new Intent(TrafficLog.this, SensorLogService.class);
 			statusText.setText("Mr.carbon");
+			movingStatus = "moving:false";
+			activityStatus = "dataType:unknown";
+			activityLevelStatus = "activityLevel:0";
 			animation.stopAnimation();
 			stopService(intent);
 			startButton.setEnabled(true);
