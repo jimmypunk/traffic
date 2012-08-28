@@ -57,7 +57,7 @@ public class ClientHelper {
         return json;
     }
     
-    public String sendCurrentTripToServer(String token, String type, String trip_id, double aver_speed, double max_speed, double total_distance, double total_time, long time_start, long time_end ) throws Exception{
+    public String sendCurrentTripToServer(String token, String type, String trip_id, double aver_speed, double max_speed, double total_distance, double total_time, long time_start, long time_end, float walking_percentage, float biking_percentage, float driving_percentage, float train_percentage) throws Exception{
     	HttpPost post = new HttpPost(API_HOST_SERVER + "/mobile/getUploadActivity.php");
     	post.setHeader("Accept-Encoding", "gzip");
     	MultipartEntity mEntity = new MultipartEntity();
@@ -70,6 +70,11 @@ public class ClientHelper {
     	mEntity.addPart("total_time", new StringBody(Double.toString(total_time)));
     	mEntity.addPart("start_time", new StringBody(StringUtils.formatDateTimeIso8601(time_start)));
     	mEntity.addPart("end_time", new StringBody(StringUtils.formatDateTimeIso8601(time_end)));
+    	mEntity.addPart("walking_percentage", new StringBody(Float.toString(walking_percentage)));
+    	mEntity.addPart("biking_percentage", new StringBody(Float.toString(biking_percentage)));
+    	mEntity.addPart("driving_percentage", new StringBody(Float.toString(driving_percentage)));
+    	mEntity.addPart("train_percentage", new StringBody(Float.toString(train_percentage)));
+    	
     	post.setEntity(mEntity);
     	HttpResponse response = mHttpClient.execute(post);
     	String ret = parseResponseToString(response);

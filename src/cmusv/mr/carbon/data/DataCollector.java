@@ -61,6 +61,10 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	private Location lastValidLocation;
 	private Track recordingTrack;
 	private DataType trackDataType = DataType.ERROR;
+	private int walkingCnt = 0;
+	private int bikingCnt = 0;
+	private int trainCnt = 0;
+	private int drivingCnt = 0;
 
 	private float deltaAccelerometerReading(float[] oldReading,
 			float[] newReading) {
@@ -139,11 +143,19 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	class UploadThread extends Thread {
 		private TripStatistics tripStatistics = null;
 		private File file = null;
-
+		private int walkingCnt = 0;
+		private int bikingCnt = 0;
+		private int drivingCnt = 0;
+		private int trainCnt = 0;
 		public void setTripStatistics(TripStatistics tripStatistics) {
 			this.tripStatistics = tripStatistics;
 		}
-
+		public void setDataTypeCnt(int walkingCnt,int bikingCnt, int drivingCnt, int trainCnt){
+			this.walkingCnt = walkingCnt;
+			this.bikingCnt = bikingCnt;
+			this.drivingCnt = drivingCnt;
+			this.trainCnt = trainCnt;
+		}
 		public void setFile(File file) {
 			this.file = file;
 		}
@@ -163,7 +175,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 				String tripId = ret.getString("trip_id");
 				Log.d(TAG, "trip_id:" + tripId);
 				Log.d(TAG, "max:" + tripStatistics.getMaxSpeed());
-
+				float totalCnt = walkingCnt + bikingCnt + drivingCnt + trainCnt;
 				clientHelper.sendCurrentTripToServer(
 						preferenceHelper.getUserToken(),
 						trackDataType.toString(), tripId,
@@ -172,7 +184,11 @@ public class DataCollector implements LocationListener, SensorEventListener {
 						tripStatistics.getTotalDistance(),
 						tripStatistics.getTotalTime(),
 						tripStatistics.getStartTime(),
-						tripStatistics.getStopTime());
+						tripStatistics.getStopTime(),
+						walkingCnt/totalCnt,
+						bikingCnt/totalCnt,
+						drivingCnt/totalCnt,
+						trainCnt/totalCnt);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -203,6 +219,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 
 	public void startRecording() {
 		startNewTrack();
+		initialDataTypeCnt();
 		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 				0, 0, this);
 		/*
@@ -223,6 +240,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 
 	public void stopRecording() {
 		endCurrentTrack();
+		initialDataTypeCnt();
 		mLocationManager.removeUpdates(this);
 		mSensorManager.unregisterListener(this);
 	}
@@ -255,12 +273,41 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			dataWindow.addLocationToWindow(locationToInsert);
 			dataAnalyst.setAnotherTripData(dataWindow
 					.getCurrentLocationWindow(time));
-			trackDataType = dataAnalyst.getAnalysisResult();
+			DataType trackDataType = dataAnalyst.getAnalysisResult();
+			updateDataTypeSummary(trackDataType);
 			intent.putExtra("dataType", trackDataType);
 			mContext.sendBroadcast(intent);
 		}
 	}
-
+	private void updateDataTypeSummary(DataType dataType){
+		switch(dataType){
+		case WALKING:
+			walkingCnt++;
+			break;
+		case BIKING:
+			bikingCnt++;
+			break;
+		case TRAIN:
+			trainCnt++;
+			break;
+		case DRIVING:
+			drivingCnt++;
+			break;
+		case ERROR:
+			//it should be impossible to get here...
+			Log.e(TAG,"error DataType returned");
+			break;
+		}
+		float totalCnt = walkingCnt + bikingCnt + trainCnt + drivingCnt;
+		Log.d("Summary","total:"+totalCnt +" walk:"+walkingCnt + " bike:" + bikingCnt + " train:" + trainCnt + " drive:" + drivingCnt);
+		Log.d("Summary", "walk:"+walkingCnt/totalCnt+" bike:"+bikingCnt/totalCnt+" train:"+ trainCnt/totalCnt + " drive:" + drivingCnt/totalCnt);
+	}
+	private void initialDataTypeCnt(){
+		walkingCnt = 0;
+		bikingCnt = 0;
+		trainCnt = 0;
+		drivingCnt = 0;
+	}
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 	}
 

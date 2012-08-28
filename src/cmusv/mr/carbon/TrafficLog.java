@@ -246,6 +246,8 @@ public class TrafficLog extends Activity {
 		public void onClick(View arg0) {
 
 			Intent intent = new Intent(TrafficLog.this, SensorLogService.class);
+			statusText.setText("Mr.carbon");
+			animation.stopAnimation();
 			stopService(intent);
 			startButton.setEnabled(true);
 			stopButton.setEnabled(false);

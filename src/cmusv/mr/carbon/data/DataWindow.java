@@ -56,8 +56,7 @@ public class DataWindow {
 				accelerIt.remove();
 			} 
 			
-		}
-			 
+		}			 
 		 
 	}
 	public float getCurrentActivityLevel(long currentTime){
