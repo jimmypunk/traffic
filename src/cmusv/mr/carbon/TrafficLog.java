@@ -1,12 +1,12 @@
 package cmusv.mr.carbon;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -14,16 +14,13 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import cmusv.mr.carbon.data.algorithm.DataAnalyst.DataType;
-import cmusv.mr.carbon.io.sendToServer.ClientHelper;
 import cmusv.mr.carbon.service.sensors.SensorLogService;
 import cmusv.mr.carbon.utils.ShareTools;
 import cmusv.mr.carbon.utils.SharepreferenceHelper;
@@ -43,16 +40,17 @@ public class TrafficLog extends Activity {
 	private final String TAG = TrafficLog.class.getSimpleName();
 	private String movingStatus = "moving:false";
 	private String activityStatus = "dataType:unknown";
-	private String activityLevelStatus = "activityLevel:0"; 
+	private String activityLevelStatus = "activityLevel:0";
 	private SharepreferenceHelper preferenceHelper;
 	private ImageAnimation animation;
 	private WakeLock wakeLock;
-
+	public static final long NO_TRACK = -2;
+	private long recordingTrackId = NO_TRACK;
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-
 		setContentView(R.layout.main);
+
 		SharedPreferences settings = getSharedPreferences("account",
 				MODE_PRIVATE);
 		preferenceHelper = new SharepreferenceHelper(settings);
@@ -61,13 +59,13 @@ public class TrafficLog extends Activity {
 			Intent i = new Intent(getApplicationContext(), LoginActivity.class);
 			startActivity(i);
 		}
-		// trafficSpinner = (Spinner) findViewById(R.id.position);
+		
 		startButton = (Button) findViewById(R.id.startButton);
 		stopButton = (Button) findViewById(R.id.stopButton);
 		startButton.setOnClickListener(startClickListener);
 		stopButton.setOnClickListener(stopClickListener);
 		statusText = (TextView) findViewById(R.id.status_text);
-		// setPlaceAdaper();
+		
 		serviceStateSetting();
 		if (!ShareTools.isSDCardExist()) {
 			Toast.makeText(this, "SD card is not mounted!", Toast.LENGTH_SHORT)
@@ -79,19 +77,54 @@ public class TrafficLog extends Activity {
 		bgImage = (ImageView) findViewById(R.id.bg_img);
 		animation = new ImageAnimation(this, bgImage);
 		animation.setAnimation(animation.bg, 1000);
-		/*
-		 * server upload file template
-		 * 
-		 * Thread t = new Thread(){
-		 * 
-		 * @Override public void run(){ try{
-		 * clientHelper.uploadFile("d35528c14af11f08881c8b924de396e4",
-		 * "/sdcard/MyTracks/csv/louis.csv"); } catch(Exception e){
-		 * e.printStackTrace(); } } }; t.start();
-		 */
+
+		
 		setupBroadcastReceiver();
 		ShareTools.checkFilesToBeUpload(this);
+		
 
+	}
+
+	void popOutRewardDialog(DataType dataType) {
+		AlertDialog.Builder badgeDialog = new AlertDialog.Builder(
+				TrafficLog.this);
+		badgeDialog.setTitle("Badge notification");
+
+		LayoutInflater layoutInflater = (LayoutInflater) getApplicationContext()
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View view = layoutInflater.inflate(R.layout.mylayout, null);
+		
+		TextView text = (TextView) view.findViewById(R.id.reward_message);
+		text.setText("Congrats, you just got a new badge");
+		ImageView badge = (ImageView) view.findViewById(R.id.badge);
+		switch(dataType){
+		case WALKING:
+			badge.setImageDrawable(getResources().getDrawable( R.drawable.walkman_badge ));
+			break;
+		case BIKING:
+			badge.setImageDrawable(getResources().getDrawable( R.drawable.bikeman_badge ));
+			break;
+		case DRIVING:
+			badge.setImageDrawable(getResources().getDrawable( R.drawable.carman_badge ));
+			break;
+		case TRAIN:
+			badge.setImageDrawable(getResources().getDrawable( R.drawable.vtaman_badge ));
+			break;
+		}
+		
+		badgeDialog.setPositiveButton("OK",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						
+
+					}
+				});
+
+
+		badgeDialog.setView(view);
+		badgeDialog.show();
 	}
 
 	public void onResume() {
@@ -136,6 +169,15 @@ public class TrafficLog extends Activity {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
+				if(intent.hasExtra("rewardMessage")){
+					DataType dataType = (DataType) intent
+							.getSerializableExtra("rewardMessage");
+					popOutRewardDialog(dataType);
+				}
+				if(intent.hasExtra("trackId")){
+					recordingTrackId = intent.getLongExtra("trackId", NO_TRACK);
+					Log.d(TAG,"receive trackId"+recordingTrackId);
+				}
 				if (intent.hasExtra("isMoving")) {
 
 					boolean isMoving = intent
@@ -174,16 +216,18 @@ public class TrafficLog extends Activity {
 
 				}
 				if (intent.hasExtra("activityLevel")) {
-					float activityLevel = intent.getFloatExtra("activityLevel",-1);
-					if(activityLevel<0){
-						activityLevelStatus = "activityLevel:"+"missing data";
-					}else{
-						activityLevelStatus = "activityLevel:"+activityLevel;	
+					float activityLevel = intent.getFloatExtra("activityLevel",
+							-1);
+					if (activityLevel < 0) {
+						activityLevelStatus = "activityLevel:" + "missing data";
+					} else {
+						activityLevelStatus = "activityLevel:" + activityLevel;
 					}
-					
+
 				}
 
-				statusText.setText(movingStatus + "\n" + activityStatus + "\n" + activityLevelStatus);
+				statusText.setText(movingStatus + "\n" + activityStatus + "\n"
+						+ activityLevelStatus);
 			}
 
 		};
@@ -192,20 +236,7 @@ public class TrafficLog extends Activity {
 		registerReceiver(receiver, filter);
 	}
 
-	/*
-	 * private void setPlaceAdaper() { ArrayAdapter<String> positionAdapter =
-	 * new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
-	 * trafficModeList); positionAdapter
-	 * .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	 * trafficSpinner.setAdapter(positionAdapter); trafficSpinner
-	 * .setOnItemSelectedListener(new Spinner.OnItemSelectedListener() { public
-	 * void onItemSelected(AdapterView adapterView, View view, int position,
-	 * long id) { useChoice = trafficModeList[position]; }
-	 * 
-	 * public void onNothingSelected(AdapterView adapterView) {
-	 * 
-	 * } }); }
-	 */
+
 
 	private void serviceStateSetting() {
 		if (isMyServiceRunning()) {
@@ -239,6 +270,7 @@ public class TrafficLog extends Activity {
 			startService(intent);
 			startButton.setEnabled(false);
 			stopButton.setEnabled(true);
+			
 		}
 	};
 
@@ -254,6 +286,9 @@ public class TrafficLog extends Activity {
 			stopService(intent);
 			startButton.setEnabled(true);
 			stopButton.setEnabled(false);
+			intent = new Intent(getApplicationContext(),TrackSummaryPage.class);
+			intent.putExtra("trackId",recordingTrackId);
+			startActivity(intent);
 
 		}
 	};

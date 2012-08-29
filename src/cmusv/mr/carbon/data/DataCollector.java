@@ -65,7 +65,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	private int bikingCnt = 0;
 	private int trainCnt = 0;
 	private int drivingCnt = 0;
-
+	private long startTime = 0;
 	private float deltaAccelerometerReading(float[] oldReading,
 			float[] newReading) {
 		float delta = 0;
@@ -94,7 +94,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	}
 
 	public void startNewTrack() {
-		long startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		Track track = new Track();
 		TripStatistics trackStats = track.getTripStatistics();
 		trackStats.setStartTime(startTime);
@@ -102,13 +102,26 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		length = 0;
 		Toast.makeText(mContext, "new track id:" + recordingTrackId,
 				Toast.LENGTH_SHORT).show();
+		updateTrackIdMessage(recordingTrackId);
+		
 
 	}
 
 	private boolean isTrackInProgress() {
 		return recordingTrackId != -1 || isRecording;
 	}
-
+	private DataType majorTrafficMode(){
+		if(walkingCnt > bikingCnt && walkingCnt > drivingCnt && walkingCnt > trainCnt){
+			return DataType.WALKING;
+		}
+		if(bikingCnt >walkingCnt  && bikingCnt > drivingCnt && bikingCnt > trainCnt){
+			return DataType.BIKING;
+		}
+		if(drivingCnt >walkingCnt  && drivingCnt > bikingCnt && drivingCnt > trainCnt){
+			return DataType.DRIVING;
+		}
+		return DataType.TRAIN;
+	}
 	private void endCurrentTrack() {
 		if (!isTrackInProgress()) {
 			return;
@@ -126,7 +139,11 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			tripStatistics.setTotalTime(tripStatistics.getStopTime()
 					- tripStatistics.getStartTime());
 			tripStatistics.setTotalDistance(length);
+			tripStatistics.setTrafficPercentage(walkingCnt, bikingCnt, drivingCnt, trainCnt);
 			Log.d(TAG, tripStatistics.toString());
+			if(length > 1000 && tripStatistics.getTotalTime()>5*60*1000){
+				updateRewardMessage(majorTrafficMode());
+			}
 			// length
 			dbHelper.updateTrack(recordedTrack);
 			final File file = writeTrack2File(recordedTrack);
@@ -176,7 +193,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 				String tripId = ret.getString("trip_id");
 				Log.d(TAG, "trip_id:" + tripId);
 				Log.d(TAG, "max:" + tripStatistics.getMaxSpeed());
-				float totalCnt = walkingCnt + bikingCnt + drivingCnt + trainCnt;
+				
 				clientHelper.sendCurrentTripToServer(
 						preferenceHelper.getUserToken(),
 						trackDataType.toString(), tripId,
@@ -186,10 +203,10 @@ public class DataCollector implements LocationListener, SensorEventListener {
 						tripStatistics.getTotalTime(),
 						tripStatistics.getStartTime(),
 						tripStatistics.getStopTime(),
-						walkingCnt/totalCnt,
-						bikingCnt/totalCnt,
-						drivingCnt/totalCnt,
-						trainCnt/totalCnt);
+						tripStatistics.getWalkingPercentage(),
+						tripStatistics.getBikingPercentage(),
+						tripStatistics.getDrivingPercentage(),
+						tripStatistics.getTrainPercentage());
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -237,6 +254,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		}
 		dataWindow = new DataWindow(timeWindow);
 		isRecording = true;
+		
 	}
 
 	public void stopRecording() {
@@ -250,6 +268,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 	@Override
 	public void onLocationChanged(Location location) {
 		onLocationChangedAsync(location);
+		
 
 	}
 
@@ -264,7 +283,20 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			mContext.sendBroadcast(intent);
 		}
 	}
-
+	public void updateTrackIdMessage(long recordingTrackId){
+		if(isRecording){
+			Intent intent = new Intent();
+			intent.setAction(TrafficLog.ACTION);
+			intent.putExtra("trackId",recordingTrackId);
+			mContext.sendBroadcast(intent);
+		}
+	}
+	public void updateRewardMessage(DataType dataType){
+		Intent intent = new Intent();
+		intent.setAction(TrafficLog.ACTION);
+		intent.putExtra("rewardMessage", dataType);
+		mContext.sendBroadcast(intent);
+	}
 	public void updateDataTypeMessage(Location locationToInsert) {
 		if (isRecording) {
 
@@ -299,9 +331,9 @@ public class DataCollector implements LocationListener, SensorEventListener {
 			Log.e(TAG,"error DataType returned");
 			break;
 		}
-		float totalCnt = walkingCnt + bikingCnt + trainCnt + drivingCnt;
+		/*float totalCnt = walkingCnt + bikingCnt + trainCnt + drivingCnt;
 		Log.d("Summary","total:"+totalCnt +" walk:"+walkingCnt + " bike:" + bikingCnt + " train:" + trainCnt + " drive:" + drivingCnt);
-		Log.d("Summary", "walk:"+walkingCnt/totalCnt+" bike:"+bikingCnt/totalCnt+" train:"+ trainCnt/totalCnt + " drive:" + drivingCnt/totalCnt);
+		Log.d("Summary", "walk:"+walkingCnt/totalCnt+" bike:"+bikingCnt/totalCnt+" train:"+ trainCnt/totalCnt + " drive:" + drivingCnt/totalCnt);*/
 	}
 	private void initialDataTypeCnt(){
 		walkingCnt = 0;
@@ -474,6 +506,7 @@ public class DataCollector implements LocationListener, SensorEventListener {
 		if (LocationUtils.isValidLocation(location)) {
 			if (lastValidLocation != null) {
 				length += location.distanceTo(lastValidLocation);
+				
 			}
 			lastValidLocation = location;
 		}

@@ -67,6 +67,10 @@ public class TripStatistics implements Parcelable {
    */
   private double maxSpeed;
 
+  private float walkingPercentage = -1;
+  private float bikingPercentage = -1;
+  private float drivingPercentage = -1;
+  private float trainPercentage = -1;
   /**
    * The min and max latitude values seen in this trip.
    */
@@ -345,7 +349,18 @@ public class TripStatistics implements Parcelable {
   public double getMinGrade() {
     return gradeExtremities.getMin();
   }
-
+  public float getWalkingPercentage(){
+	  return walkingPercentage;
+  }
+  public float getBikingPercentage(){
+	  return bikingPercentage;
+  }
+  public float getDrivingPercentage(){
+	  return drivingPercentage;
+  }
+  public float getTrainPercentage(){
+	  return trainPercentage;
+  }
   // Setters - to be used when restoring state or loading from the DB
 
   /**
@@ -356,7 +371,29 @@ public class TripStatistics implements Parcelable {
   public void setStartTime(long startTime) {
     this.startTime = startTime;
   }
-
+  public void setTrafficPercentage(int walkingCnt,int bikingCnt, int drivingCnt, int trainCnt){
+	  float totalCnt =walkingCnt + bikingCnt + drivingCnt + trainCnt;
+	  if(totalCnt == 0.0){
+		  this.walkingPercentage = this.bikingPercentage = this.drivingPercentage = this.trainPercentage = 0.25f;
+	  }else{
+		  this.walkingPercentage = walkingCnt/totalCnt;
+		  this.bikingPercentage = bikingCnt/totalCnt;
+		  this.drivingPercentage = drivingCnt/totalCnt;
+		  this.trainPercentage = trainCnt/totalCnt;
+	  }
+  }
+  public void setWalkingPercentage(float walkingPercentage){
+	  this.walkingPercentage = walkingPercentage;
+  }
+  public void setBikingPercentage(float bikingPercentage){
+	  this.bikingPercentage = bikingPercentage;
+  }
+  public void setDrivingPercentage(float drivingPercentage){
+	  this.drivingPercentage = drivingPercentage;
+  }
+  public void setTrainPercentage(float trainPercentage){
+	  this.trainPercentage = trainPercentage;
+  }
   /**
    * Sets the stop time for this trip.
    *

@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class ImageAnimation{
-	public final int[] bg= {R.drawable.background_1, R.drawable.background_2, R.drawable.background_3, R.drawable.background_4, R.drawable.background_5, R.drawable.background_6, R.drawable.background_7, R.drawable.background_8,R.drawable.background_9,R.drawable.background_10};
+	public final int[] bg= {R.drawable.background_1, R.drawable.background_2, R.drawable.background_3, R.drawable.background_4};
 	public AnimationDrawable animation = null;
 	private Context context;
 	private ImageView imageView;

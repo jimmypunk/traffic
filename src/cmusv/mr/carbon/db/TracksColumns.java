@@ -63,6 +63,10 @@ public interface TracksColumns extends BaseColumns {
   public static final String MINGRADE = "mingrade"; // minimum grade
   public static final String MAXGRADE = "maxgrade"; // maximum grade
   public static final String MAPID = "mapid"; // Google Maps id
+  public static final String WALKING_PERCENTAGE = "walkingpercentage";
+  public static final String BIKING_PERCENTAGE = "bikingpercentage";
+  public static final String DRIVING_PERCENTAGE = "drivingpercentage";
+  public static final String TRAIN_PERCENTAGE = "trainpercentage";
   public static final String ICON = "icon"; // track activity type icon
   
   public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" 
@@ -91,7 +95,12 @@ public interface TracksColumns extends BaseColumns {
       + MINGRADE + " FLOAT, " 
       + MAXGRADE + " FLOAT, " 
       + MAPID + " STRING, " 
-      + ICON + " STRING" 
+      //+ ICON + " STRING" 
+      + ICON + " STRING, "
+      + WALKING_PERCENTAGE + " FLOAT, "
+      + BIKING_PERCENTAGE + " FLOAT, "
+      + DRIVING_PERCENTAGE + " FLOAT, "
+      + TRAIN_PERCENTAGE + " FLOAT"
       + ");";
 
   public static final String[] COLUMNS = {
@@ -120,6 +129,10 @@ public interface TracksColumns extends BaseColumns {
       MINGRADE,
       MAXGRADE,
       MAPID,
+      WALKING_PERCENTAGE,
+      BIKING_PERCENTAGE,
+      DRIVING_PERCENTAGE,
+      TRAIN_PERCENTAGE,
       ICON
   };
 
@@ -149,7 +162,10 @@ public interface TracksColumns extends BaseColumns {
       ContentTypeIds.FLOAT_TYPE_ID, // min grade
       ContentTypeIds.FLOAT_TYPE_ID, // max grade
       ContentTypeIds.STRING_TYPE_ID, // map id
-      ContentTypeIds.STRING_TYPE_ID, // table id
+      ContentTypeIds.FLOAT_TYPE_ID, // walking percentage
+      ContentTypeIds.FLOAT_TYPE_ID, // biking percentage
+      ContentTypeIds.FLOAT_TYPE_ID, // driving percentage
+      ContentTypeIds.FLOAT_TYPE_ID, // train percentage
       ContentTypeIds.STRING_TYPE_ID // icon
     };
 }

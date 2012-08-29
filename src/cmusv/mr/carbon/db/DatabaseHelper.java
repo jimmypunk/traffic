@@ -20,7 +20,7 @@ import cmusv.mr.carbon.data.stats.TripStatistics;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	static final String DATABASE_NAME = "mrcarbon.db";
-	private static final int DATABASE_VERSION = 21;
+	private static final int DATABASE_VERSION = 23;
 	private SQLiteDatabase db;
 	public static final String TAG = DatabaseHelper.class.getSimpleName();
 
@@ -144,6 +144,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				.getColumnIndexOrThrow(TracksColumns.MAXGRADE);
 		int mapIdIndex = cursor.getColumnIndexOrThrow(TracksColumns.MAPID);
 		//int tableIdIndex = cursor.getColumnIndexOrThrow(TracksColumns.TABLEID);
+		int walkingPercentageIndex = cursor
+				.getColumnIndexOrThrow(TracksColumns.WALKING_PERCENTAGE);
+		int bikingPercentageIndex = cursor
+				.getColumnIndexOrThrow(TracksColumns.BIKING_PERCENTAGE);
+		int drivingPercentageIndex = cursor
+				.getColumnIndexOrThrow(TracksColumns.DRIVING_PERCENTAGE);
+		int trainPercentageIndex = cursor
+				.getColumnIndexOrThrow(TracksColumns.TRAIN_PERCENTAGE);
 		int iconIndex = cursor.getColumnIndexOrThrow(TracksColumns.ICON);
 
 		Track track = new Track();
@@ -214,6 +222,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		if (!cursor.isNull(mapIdIndex)) {
 			track.setMapId(cursor.getString(mapIdIndex));
+		}
+		if (!cursor.isNull(walkingPercentageIndex)) {
+			tripStatistics.setWalkingPercentage(cursor.getFloat(walkingPercentageIndex));
+		}
+		if (!cursor.isNull(bikingPercentageIndex)) {
+			tripStatistics.setBikingPercentage(cursor.getFloat(bikingPercentageIndex));
+		}
+		if (!cursor.isNull(drivingPercentageIndex)) {
+			tripStatistics.setDrivingPercentage(cursor.getFloat(drivingPercentageIndex));
+		}
+		if (!cursor.isNull(trainPercentageIndex)) {
+			tripStatistics.setTrainPercentage(cursor.getFloat(trainPercentageIndex));
 		}
 		/*if (!cursor.isNull(tableIdIndex)) {
 			track.setTableId(cursor.getString(tableIdIndex));
@@ -393,6 +413,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(TracksColumns.MINGRADE, tripStatistics.getMinGrade());
 		values.put(TracksColumns.MAXGRADE, tripStatistics.getMaxGrade());
 		values.put(TracksColumns.MAPID, track.getMapId());
+		values.put(TracksColumns.WALKING_PERCENTAGE, tripStatistics.getWalkingPercentage());
+		values.put(TracksColumns.BIKING_PERCENTAGE, tripStatistics.getBikingPercentage());
+		values.put(TracksColumns.DRIVING_PERCENTAGE, tripStatistics.getDrivingPercentage());
+		values.put(TracksColumns.TRAIN_PERCENTAGE, tripStatistics.getTrainPercentage());
 		//values.put(TracksColumns.TABLEID, track.getTableId());
 		values.put(TracksColumns.ICON, track.getIcon());
 		return values;
