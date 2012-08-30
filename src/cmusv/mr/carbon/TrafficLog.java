@@ -43,6 +43,7 @@ public class TrafficLog extends Activity {
 	private String activityLevelStatus = "activityLevel:0";
 	private SharepreferenceHelper preferenceHelper;
 	private ImageAnimation animation;
+	private ImageView sweatImage;
 	private WakeLock wakeLock;
 	public static final long NO_TRACK = -2;
 	private long recordingTrackId = NO_TRACK;
@@ -75,6 +76,7 @@ public class TrafficLog extends Activity {
 
 		statusImage = (ImageView) findViewById(R.id.status_img);
 		bgImage = (ImageView) findViewById(R.id.bg_img);
+		sweatImage = (ImageView)findViewById(R.id.sweat_img);
 		animation = new ImageAnimation(this, bgImage);
 		animation.setAnimation(animation.bg, 1000);
 
@@ -217,11 +219,18 @@ public class TrafficLog extends Activity {
 				}
 				if (intent.hasExtra("activityLevel")) {
 					float activityLevel = intent.getFloatExtra("activityLevel",
-							-1);
+							0);
 					if (activityLevel < 0) {
 						activityLevelStatus = "activityLevel:" + "missing data";
 					} else {
 						activityLevelStatus = "activityLevel:" + activityLevel;
+						
+						if(activityLevel > 6){
+							sweatImage.setVisibility(ImageView.VISIBLE);
+						}
+						else{
+							sweatImage.setVisibility(ImageView.INVISIBLE);
+						}
 					}
 
 				}

@@ -2992,4 +2992,5 @@ limitations under the License.
     translation_description="The title of the welcome dialog.">
     Welcome to My Tracks
   </string>
+  <string name="summary_label">Track summary</string>
 </resources>

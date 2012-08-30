@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#86222222" >
+
+    <TextView
+        android:id="@+id/popmessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="messege" >
+    </TextView>
+
+    <ImageView
+        android:id="@+id/popimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:scaleType="center" >
+    </ImageView>
+
+    <Button
+        android:id="@+id/positive_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="yes" >
+    </Button>
+
+    <Button
+        android:id="@+id/negative_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="no" >
+    </Button>
+
+</LinearLayout>
